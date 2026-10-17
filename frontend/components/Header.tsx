@@ -36,6 +36,8 @@ export const Header: React.FC<HeaderProps> = ({
     { name: lang === 'en' ? 'Command Dashboard' : 'कमांड डैशबोर्ड', href: '/' },
     { name: lang === 'en' ? 'Incidents Queue' : 'घटना सूची', href: '/incidents' },
     { name: lang === 'en' ? 'Response Resources' : 'प्रतिक्रिया संसाधन', href: '/resources' },
+    { name: lang === 'en' ? 'Evacuation GIS' : 'निकासी गलियारे', href: '/evacuation' },
+    { name: lang === 'en' ? 'Predictive Analytics' : 'पूर्वानुमान एवं विश्लेषण', href: '/analytics' },
     { name: lang === 'en' ? 'Audit Trail' : 'ऑडिट लॉग', href: '/audit' }
   ];
 
