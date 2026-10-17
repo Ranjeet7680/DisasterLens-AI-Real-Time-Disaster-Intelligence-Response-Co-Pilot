@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Send, AlertTriangle, MapPin, Radio, ShieldCheck } from 'lucide-react';
+import { X, Send, AlertTriangle, MapPin, Radio, ShieldCheck, Mic, MicOff } from 'lucide-react';
 import { submitIncident } from '../lib/api';
+import { SupportedLanguage, getTranslation } from '../lib/languages';
+import { startVoiceRecognition, stopVoiceRecognition } from '../lib/voice';
 
 interface IncidentReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmitted: () => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
@@ -26,6 +28,7 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
   const [address, setAddress] = useState('Sector 4 Lowlands, Main Road');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -221,16 +224,57 @@ export const IncidentReportModal: React.FC<IncidentReportModalProps> = ({
             </div>
           </div>
 
-          {/* Description */}
+          {/* Description with Voice Dictation */}
           <div>
-            <label className="block text-slate-400 font-semibold mb-1">
-              {lang === 'en' ? 'Incident Description & Indicators' : 'घटना विवरण एवं संकेत'}
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-slate-400 font-semibold">
+                {lang === 'en' ? 'Incident Description & Indicators' : 'घटना विवरण एवं संकेत'}
+              </label>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (isListening) {
+                    stopVoiceRecognition();
+                    setIsListening(false);
+                  } else {
+                    setIsListening(true);
+                    startVoiceRecognition(
+                      lang,
+                      (transcript) => {
+                        setDescription((prev) => (prev ? prev + ' ' + transcript : transcript));
+                      },
+                      (err) => {
+                        console.warn(err);
+                        setIsListening(false);
+                      },
+                      () => setIsListening(false)
+                    );
+                  }
+                }}
+                className={`px-2 py-0.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-all ${
+                  isListening
+                    ? 'bg-red-600 text-white animate-pulse'
+                    : 'bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700'
+                }`}
+              >
+                {isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
+                <span>{isListening ? (lang === 'hi' ? 'बोलना बंद करें' : 'Stop Listening') : (lang === 'hi' ? 'बोलकर दर्ज करें' : 'Dictate SOS')}</span>
+              </button>
+            </div>
+
+            {isListening && (
+              <div className="p-2 mb-2 rounded bg-red-950/60 border border-red-800 text-[11px] text-red-200 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <span>Listening in {lang}... Speak your emergency report clearly.</span>
+              </div>
+            )}
+
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={lang === 'en' ? 'Describe observed inundation, trapped persons, rising water rate, or infrastructure damage...' : 'घटना का विवरण दर्ज करें...'}
+              placeholder={lang === 'en' ? 'Describe observed inundation, trapped persons, rising water rate, or infrastructure damage...' : 'घटना का विवरण दर्ज करें या बोलकर बताएं...'}
               className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
             />
           </div>

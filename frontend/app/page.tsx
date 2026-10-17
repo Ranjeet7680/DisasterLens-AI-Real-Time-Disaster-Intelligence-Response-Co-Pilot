@@ -13,6 +13,9 @@ import { DecisionModal } from '../components/DecisionModal';
 import { IncidentReportModal } from '../components/IncidentReportModal';
 import { SimulatorDrawer } from '../components/SimulatorDrawer';
 import { ExportReportModal } from '../components/ExportReportModal';
+import { VoiceAssistantBar } from '../components/VoiceAssistantBar';
+import { AICopilotChat } from '../components/AICopilotChat';
+import { SupportedLanguage, getTranslation } from '../lib/languages';
 
 import {
   fetchIncidents,
@@ -35,7 +38,7 @@ import { playEmergencyAlertSound } from '../lib/sound';
 import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Radio, Users, Cpu, FileCheck, FileText } from 'lucide-react';
 
 export default function CommandDashboard() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const [lang, setLang] = useState<SupportedLanguage>('en');
 
   // State
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -51,6 +54,7 @@ export default function CommandDashboard() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
 
   // Load primary data
   const loadData = useCallback(async () => {
@@ -160,6 +164,19 @@ export default function CommandDashboard() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
+        {/* Multilingual Voice Assistant & SOS Dictation Bar */}
+        <VoiceAssistantBar
+          currentBriefText={
+            (incidentDetail as any)?.translations?.[lang] ||
+            (lang === 'hi' ? (incidentDetail as any)?.summary_text_hi : (incidentDetail as any)?.summary_text_en) ||
+            (incidentDetail as any)?.summary_text_en ||
+            (incidentDetail as any)?.summary_text_hi
+          }
+          lang={lang}
+          onOpenReportWithVoice={() => setIsReportModalOpen(true)}
+          onOpenCopilot={() => setIsCopilotOpen(true)}
+        />
+
         {/* Top Tactical Metrics Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl backdrop-blur-md shadow-lg">
@@ -321,6 +338,7 @@ export default function CommandDashboard() {
                   agentRuns={incidentDetail?.agent_runs || []}
                   summaryEn={incidentDetail?.risk_assessment ? (incidentDetail as any).summary_text_en : undefined}
                   summaryHi={incidentDetail?.risk_assessment ? (incidentDetail as any).summary_text_hi : undefined}
+                  translations={(incidentDetail as any)?.translations}
                   lang={lang}
                   onReanalyze={handleReanalyzeCurrent}
                   isAnalyzing={isAnalyzing}
@@ -364,6 +382,14 @@ export default function CommandDashboard() {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         detail={incidentDetail}
+        lang={lang}
+      />
+
+      {/* Disaster AI Co-Pilot Interactive Assistant */}
+      <AICopilotChat
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        incidentId={selectedIncident?.incident_id}
         lang={lang}
       />
     </div>

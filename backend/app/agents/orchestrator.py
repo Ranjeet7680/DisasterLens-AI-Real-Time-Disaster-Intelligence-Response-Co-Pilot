@@ -10,7 +10,7 @@ from .hazard import HazardIntelligenceAgent
 from .validation import ReportValidationAgent
 from .risk import RiskAssessmentAgent
 from .response import ResponsePlanningAgent
-from ..services.llm_service import generate_briefing
+from ..services.llm_service import generate_multilingual_briefings
 from ..services.websocket_manager import ws_manager
 
 logger = logging.getLogger("disasterlens.orchestrator")
@@ -175,8 +175,10 @@ class DecisionOrchestrator:
             VALUES (?, ?, ?, ?, ?, ?, 'active')
             """, (alert_id, incident_id, title, message, sev_band.lower(), now))
 
-        # 6. Synthesize Multilingual Briefing (English & Hindi)
-        summary_en, summary_hi = await generate_briefing(incident, risk_output, hazard_output, recommendations)
+        # 6. Synthesize Multilingual Briefings (English, Hindi, Bengali, Tamil, Telugu, Marathi)
+        translations = await generate_multilingual_briefings(incident, risk_output, hazard_output, recommendations)
+        summary_en = translations.get("en", "")
+        summary_hi = translations.get("hi", "")
 
         # 7. Record Audit Event
         audit_id = f"AUD-{uuid.uuid4().hex[:8]}"
@@ -213,6 +215,7 @@ class DecisionOrchestrator:
             "total_latency_ms": total_latency,
             "summary_text_en": summary_en,
             "summary_text_hi": summary_hi,
+            "translations": translations,
             "workflow_completed_at": datetime.now(timezone.utc).isoformat()
         }
 

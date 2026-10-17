@@ -9,8 +9,10 @@ import { IncidentReportModal } from '../../components/IncidentReportModal';
 import { SimulatorDrawer } from '../../components/SimulatorDrawer';
 import { Search, Filter, AlertTriangle, Layers, MapPin, Sparkles, RefreshCw } from 'lucide-react';
 
+import { SupportedLanguage } from '../../lib/languages';
+
 export default function IncidentsPage() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const [lang, setLang] = useState<SupportedLanguage>('en');
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [filterHazard, setFilterHazard] = useState<string>('all');
   const [filterSeverity, setFilterSeverity] = useState<string>('all');

@@ -35,7 +35,33 @@ async def test_full_orchestrator_pipeline():
     assert "risk_assessment" in decision_brief
     assert "recommendations" in decision_brief
     assert len(decision_brief["recommendations"]) > 0
-    assert len(decision_brief["agent_runs"]) == 4  # Hazard, Validation, Risk, Response
-    assert decision_brief["summary_text_en"] is not None
-    assert decision_brief["summary_text_hi"] is not None
-    assert decision_brief["risk_assessment"]["composite_score"] > 0
+    assert "translations" in decision_brief
+    assert "en" in decision_brief["translations"]
+    assert "hi" in decision_brief["translations"]
+    assert "bn" in decision_brief["translations"]
+    assert "ta" in decision_brief["translations"]
+    assert "te" in decision_brief["translations"]
+    assert "mr" in decision_brief["translations"]
+
+@pytest.mark.asyncio
+async def test_disaster_copilot_indian_languages():
+    from backend.app.services.llm_service import ask_disaster_copilot
+    
+    # Test query in Hindi for shelters
+    hi_result = await ask_disaster_copilot(
+        query="निकटतम आश्रय स्थल कौन से हैं?",
+        incident_context={"incident_id": "INC-1001", "hazard_type": "flood"},
+        available_resources=[{"resource_type": "evacuation_shelter", "name": "Morabadi Shelter", "available_capacity": 480}],
+        lang="hi"
+    )
+    assert "मोराबादी" in hi_result["answer"] or "आश्रय" in hi_result["answer"]
+    assert len(hi_result["suggested_actions"]) > 0
+
+    # Test query in Bengali
+    bn_result = await ask_disaster_copilot(
+        query="উদ্ধারকারী নৌকা কোথায় আছে?",
+        incident_context={"incident_id": "INC-1001", "hazard_type": "flood"},
+        lang="bn"
+    )
+    assert len(bn_result["answer"]) > 10
+

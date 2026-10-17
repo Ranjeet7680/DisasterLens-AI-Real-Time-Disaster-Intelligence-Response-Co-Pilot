@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShieldAlert, Radio, Activity, Volume2, VolumeX, Sparkles, PlusCircle, FileText } from 'lucide-react';
 import { toggleAudio, getAudioState } from '../lib/sound';
+import { SupportedLanguage, LANGUAGES } from '../lib/languages';
 
 interface HeaderProps {
-  lang: 'en' | 'hi';
-  setLang: (lang: 'en' | 'hi') => void;
+  lang: SupportedLanguage;
+  setLang: (lang: SupportedLanguage) => void;
   onOpenReportModal: () => void;
   onOpenSimulator: () => void;
   onOpenExport?: () => void;
@@ -105,24 +106,19 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{lang === 'en' ? 'LIVE WS' : 'लाइव'}</span>
             </div>
 
-            {/* Language Toggle */}
-            <div className="flex items-center rounded-lg bg-slate-900 border border-slate-800 p-0.5 text-xs font-medium">
-              <button
-                onClick={() => setLang('en')}
-                className={`px-2 py-1 rounded transition-colors ${
-                  lang === 'en' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
-                }`}
+            {/* Indian Languages Selector */}
+            <div className="flex items-center rounded-lg bg-slate-900 border border-slate-700 p-0.5 text-xs font-medium">
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as SupportedLanguage)}
+                className="bg-transparent text-amber-300 font-bold px-2 py-1 focus:outline-none cursor-pointer text-xs"
               >
-                EN
-              </button>
-              <button
-                onClick={() => setLang('hi')}
-                className={`px-2 py-1 rounded transition-colors ${
-                  lang === 'hi' ? 'bg-amber-600 text-white font-bold' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                हिंदी
-              </button>
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code} className="bg-slate-900 text-white">
+                    {l.nativeName} ({l.name})
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Export SitRep button */}

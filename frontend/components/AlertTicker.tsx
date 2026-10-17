@@ -3,10 +3,11 @@
 import React from 'react';
 import { Alert } from '../lib/types';
 import { ShieldAlert, AlertTriangle, Radio } from 'lucide-react';
+import { SupportedLanguage } from '../lib/languages';
 
 interface AlertTickerProps {
   alerts: Alert[];
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
   onSelectAlert?: (alert: Alert) => void;
 }
 

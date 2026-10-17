@@ -5,6 +5,7 @@ import { Recommendation } from '../lib/types';
 import { Check, X, Edit3, ShieldAlert, CheckCircle2, UserCheck, Package, BookOpen, Sparkles } from 'lucide-react';
 import { reviewRecommendation } from '../lib/api';
 import { playApprovalSuccessSound } from '../lib/sound';
+import { SupportedLanguage } from '../lib/languages';
 
 interface DecisionModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface DecisionModalProps {
   recommendations: Recommendation[];
   incidentId: string;
   onRefresh: () => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const DecisionModal: React.FC<DecisionModalProps> = ({

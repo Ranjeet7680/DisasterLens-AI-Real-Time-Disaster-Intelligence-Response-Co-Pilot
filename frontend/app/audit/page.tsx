@@ -8,8 +8,10 @@ import { IncidentReportModal } from '../../components/IncidentReportModal';
 import { SimulatorDrawer } from '../../components/SimulatorDrawer';
 import { FileText, ShieldCheck, UserCheck, RefreshCw, AlertCircle, Database } from 'lucide-react';
 
+import { SupportedLanguage } from '../../lib/languages';
+
 export default function AuditPage() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const [lang, setLang] = useState<SupportedLanguage>('en');
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [loading, setLoading] = useState(false);
 

@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { CloudRain, Wind, Droplets, Thermometer, Radio, Gauge, AlertCircle } from 'lucide-react';
 import { fetchWeather } from '../lib/api';
+import { SupportedLanguage } from '../lib/languages';
 
 interface LiveWeatherWidgetProps {
   latitude: number;
   longitude: number;
   regionName?: string;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const LiveWeatherWidget: React.FC<LiveWeatherWidgetProps> = ({

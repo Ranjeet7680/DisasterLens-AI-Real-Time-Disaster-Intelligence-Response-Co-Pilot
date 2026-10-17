@@ -14,6 +14,7 @@ from .api.audit import router as audit_router
 from .api.simulator import router as simulator_router
 from .api.weather import router as weather_router
 from .api.metrics import router as metrics_router
+from .api.copilot import router as copilot_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("disasterlens.main")
@@ -52,6 +53,7 @@ app.include_router(audit_router)
 app.include_router(simulator_router)
 app.include_router(weather_router)
 app.include_router(metrics_router)
+app.include_router(copilot_router)
 
 @app.get("/api/health")
 def health_check():

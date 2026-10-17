@@ -2,13 +2,17 @@
 
 import React, { useState } from 'react';
 import { AgentRun } from '../lib/types';
-import { Bot, CheckCircle, Clock, Zap, AlertCircle, Cpu, Languages, Sparkles, ChevronDown, ChevronUp, Terminal } from 'lucide-react';
+import { Bot, CheckCircle, Clock, Zap, AlertCircle, Cpu, Languages, Sparkles, ChevronDown, ChevronUp, Terminal, Volume2, VolumeX } from 'lucide-react';
+
+import { SupportedLanguage, LANGUAGES, getTranslation } from '../lib/languages';
+import { speakText, stopSpeaking } from '../lib/voice';
 
 interface AgentActivityProps {
   agentRuns: AgentRun[];
   summaryEn?: string;
   summaryHi?: string;
-  lang: 'en' | 'hi';
+  translations?: Record<string, string>;
+  lang: SupportedLanguage;
   onReanalyze?: () => void;
   isAnalyzing?: boolean;
 }
@@ -17,12 +21,32 @@ export const AgentActivity: React.FC<AgentActivityProps> = ({
   agentRuns,
   summaryEn,
   summaryHi,
+  translations,
   lang,
   onReanalyze,
   isAnalyzing = false
 }) => {
-  const [briefLang, setBriefLang] = useState<'en' | 'hi'>(lang);
   const [expandedAgent, setExpandedAgent] = useState<string | null>(null);
+  const [isSpeakingBrief, setIsSpeakingBrief] = useState(false);
+
+  // Determine current active briefing text based on selected Indian language
+  const activeBriefText =
+    translations?.[lang] ||
+    (lang === 'hi' ? summaryHi : summaryEn) ||
+    summaryEn ||
+    summaryHi ||
+    '';
+
+  const handleSpeakBrief = () => {
+    if (isSpeakingBrief) {
+      stopSpeaking();
+      setIsSpeakingBrief(false);
+    } else {
+      if (!activeBriefText) return;
+      setIsSpeakingBrief(true);
+      speakText(activeBriefText, lang, () => setIsSpeakingBrief(false));
+    }
+  };
 
   const agentsList = [
     { key: 'Hazard Intelligence Agent', icon: '🌊', desc: 'Precipitation, river levels & flood stage' },
@@ -160,34 +184,34 @@ export const AgentActivity: React.FC<AgentActivityProps> = ({
         </div>
       )}
 
-      {/* Decision Briefing Box (English + Hindi) */}
-      {(summaryEn || summaryHi) && (
+      {/* Multilingual Decision Briefing Box */}
+      {activeBriefText && (
         <div className="p-4 rounded-xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/40 border border-indigo-900/50 shadow-inner">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>{lang === 'en' ? 'Consolidated Decision Briefing' : 'समेकित परिचालन निर्णय रिपोर्ट'}</span>
+              <span>{getTranslation(lang, 'consolidatedBrief', 'Consolidated Decision Briefing')}</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 uppercase">
+                {lang}
+              </span>
             </span>
 
-            {/* Language toggle for brief */}
-            <div className="flex items-center gap-1 text-[11px] bg-slate-900 px-1 py-0.5 rounded border border-slate-800">
-              <button
-                onClick={() => setBriefLang('en')}
-                className={`px-2 py-0.5 rounded ${briefLang === 'en' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => setBriefLang('hi')}
-                className={`px-2 py-0.5 rounded ${briefLang === 'hi' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'}`}
-              >
-                हिंदी
-              </button>
-            </div>
+            {/* Read Aloud Voice Button */}
+            <button
+              onClick={handleSpeakBrief}
+              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
+                isSpeakingBrief
+                  ? 'bg-amber-600 text-white animate-pulse'
+                  : 'bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700'
+              }`}
+            >
+              <Volume2 className="w-3.5 h-3.5" />
+              <span>{isSpeakingBrief ? 'Stop' : 'Listen'}</span>
+            </button>
           </div>
 
           <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
-            {briefLang === 'en' ? (summaryEn || summaryHi) : (summaryHi || summaryEn)}
+            {activeBriefText}
           </p>
         </div>
       )}

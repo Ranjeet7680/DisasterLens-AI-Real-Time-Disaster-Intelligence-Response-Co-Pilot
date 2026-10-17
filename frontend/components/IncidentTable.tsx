@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { Incident } from '../lib/types';
 import { AlertCircle, AlertTriangle, Layers, MapPin, ShieldCheck, ChevronRight, Copy, ArrowUpDown } from 'lucide-react';
+import { SupportedLanguage } from '../lib/languages';
 
 interface IncidentTableProps {
   incidents: Incident[];
   selectedIncident: Incident | null;
   onSelectIncident: (inc: Incident) => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const IncidentTable: React.FC<IncidentTableProps> = ({

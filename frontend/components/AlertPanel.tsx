@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { Alert } from '../lib/types';
 import { Bell, AlertOctagon, Check, CheckCheck, ShieldAlert } from 'lucide-react';
 import { acknowledgeAlert, resolveAlert } from '../lib/api';
+import { SupportedLanguage, getTranslation } from '../lib/languages';
 
 interface AlertPanelProps {
   alerts: Alert[];
   onRefresh: () => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang }) => {

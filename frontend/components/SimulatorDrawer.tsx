@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { X, Sparkles, Play, ShieldAlert, CheckCircle, Copy, Flame, Waves } from 'lucide-react';
 import { triggerScenario } from '../lib/api';
+import { SupportedLanguage } from '../lib/languages';
 
 interface SimulatorDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onScenarioTriggered: () => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const SimulatorDrawer: React.FC<SimulatorDrawerProps> = ({

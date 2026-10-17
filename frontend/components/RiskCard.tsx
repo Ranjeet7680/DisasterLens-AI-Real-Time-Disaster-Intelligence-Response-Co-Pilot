@@ -3,10 +3,11 @@
 import React from 'react';
 import { RiskAssessment } from '../lib/types';
 import { AlertTriangle, ShieldCheck, Info, CheckCircle2, Flame, Users, Landmark, Clock } from 'lucide-react';
+import { SupportedLanguage, getTranslation } from '../lib/languages';
 
 interface RiskCardProps {
   assessment?: RiskAssessment | null;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const RiskCard: React.FC<RiskCardProps> = ({ assessment, lang }) => {

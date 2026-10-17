@@ -3,13 +3,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Incident, ResourceItem } from '../lib/types';
 import { Eye, EyeOff, Navigation, Layers, Compass, Crosshair } from 'lucide-react';
+import { SupportedLanguage } from '../lib/languages';
 
 interface IncidentMapProps {
   incidents: Incident[];
   resources: ResourceItem[];
   selectedIncident: Incident | null;
   onSelectIncident: (incident: Incident) => void;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const IncidentMap: React.FC<IncidentMapProps> = ({

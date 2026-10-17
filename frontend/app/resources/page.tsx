@@ -8,8 +8,10 @@ import { IncidentReportModal } from '../../components/IncidentReportModal';
 import { SimulatorDrawer } from '../../components/SimulatorDrawer';
 import { Shield, Home, Anchor, Zap, Users, MapPin, Phone, RefreshCw, CheckCircle2 } from 'lucide-react';
 
+import { SupportedLanguage } from '../../lib/languages';
+
 export default function ResourcesPage() {
-  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const [lang, setLang] = useState<SupportedLanguage>('en');
   const [resources, setResources] = useState<ResourceItem[]>([]);
   const [filterType, setFilterType] = useState('all');
 

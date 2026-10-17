@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { IncidentDetail } from '../lib/types';
 import { X, FileDown, Copy, Check, ShieldCheck, Printer } from 'lucide-react';
+import { SupportedLanguage } from '../lib/languages';
 
 interface ExportReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   detail: IncidentDetail | null;
-  lang: 'en' | 'hi';
+  lang: SupportedLanguage;
 }
 
 export const ExportReportModal: React.FC<ExportReportModalProps> = ({
@@ -22,7 +23,7 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({
   if (!isOpen || !detail) return null;
 
   const { incident, risk_assessment, recommendations, agent_runs } = detail;
-  const now = new Date().toISOString();
+  const now = incident?.reported_at || 'Operational Period';
 
   // Generate formal Markdown SitRep
   const reportMarkdown = `# EMERGENCY OPERATIONS CENTER (EOC) — SITUATION REPORT (SITREP)
