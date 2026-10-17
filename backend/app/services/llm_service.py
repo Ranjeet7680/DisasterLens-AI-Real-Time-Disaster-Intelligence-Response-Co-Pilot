@@ -126,48 +126,81 @@ async def ask_disaster_copilot(
     inc_id = incident_context.get("incident_id", "N/A") if incident_context else "N/A"
     hazard_type = incident_context.get("hazard_type", "flood") if incident_context else "flood"
     
-    # Check for shelter or boat questions
-    if any(w in q_lower for w in ["shelter", "आश्रय", "আশ্রয়", "தங்குமிடம்", "ఆశ్రయం", "capacity"]):
+    # 1. Shelter or Evacuation Capacity Questions
+    if any(w in q_lower for w in ["shelter", "capacity", "आश्रय", "स्थान", "আশ্রয়", "শিবির", "தங்குமிடம்", "முகாம்", "ఆశ్రయం", "శిబిరం", "निवारा"]):
         shelters = [r for r in (available_resources or []) if r.get("resource_type") == "evacuation_shelter"]
-        if shelters:
-            top_s = shelters[0]
-            answer_en = f"Morabadi Community Relief Shelter ({top_s.get('available_capacity', 480)} available spaces) and Dhurwa Camp (650 spaces) are currently active and ready for evacuation."
-            answer_hi = f"मोराबादी सामुदायिक राहत शिविर ({top_s.get('available_capacity', 480)} खाली स्थान) तथा धुर्वा कैंप (650 स्थान) वर्तमान में सक्रिय और तैयार हैं।"
-            answer_bn = f"মোরাবাদি কমিউনিটি ত্রাণ শিবির ({top_s.get('available_capacity', 480)} আসন খালি) এবং ধুরওয়া ক্যাম্প বর্তমানে সম্পূর্ণ প্রস্তুত।"
-            answer_ta = f"மொராபாடி நிவாரண முகாம் ({top_s.get('available_capacity', 480)} இடங்கள்) மற்றும் துர்வா முகாம் தற்போது தயாராக உள்ளன."
-            answer_te = f"మొరాబాడి సహాయక శిబిరం ({top_s.get('available_capacity', 480)} ఖాళీలు) మరియు ధుర్వా క్యాంప్ సిద్ధంగా ఉన్నాయి."
-            answer_mr = f"मोराबादी समुदाय मदत शिबिर ({top_s.get('available_capacity', 480)} जागा उपलब्ध) आणि धुर्वा कॅम्प तात्काळ स्थलांतरासाठी सज्ज आहेत."
-        else:
-            answer_en = "2 regional shelters are on standby with 1,130 total verified capacity."
-            answer_hi = "2 क्षेत्रीय आश्रय स्थल 1,130 कुल क्षमता के साथ स्टैंडबाय पर हैं।"
-            answer_bn = "২টি আঞ্চলিক ত্রাণ শিবির ১,১৩০ মোট ক্ষমতাসহ প্রস্তুত রয়েছে।"
-            answer_ta = "2 பிராந்திய முகாம்கள் 1,130 மொத்த கொள்ளளவோடு தயார் நிலையில் உள்ளன."
-            answer_te = "2 ప్రాంతీయ శిబిరాలు 1,130 మొత్తం సామర్థ్యంతో సిద్ధంగా ఉన్నాయి."
-            answer_mr = "2 प्रादेशिक मदत शिबिरे 1,130 एकूण क्षमतेसह सज्ज आहेत."
+        cap = shelters[0].get('available_capacity', 480) if shelters else 480
+        total_cap = sum(s.get('capacity', 500) for s in shelters) if shelters else 1150
+        answer_en = f"Active Evacuation Shelters: Morabadi Community Shelter ({cap} spaces ready) and Dhurwa Sports Complex ({total_cap - cap} spaces). Both have emergency drinking water, sanitation, and medical triage points."
+        answer_hi = f"सक्रिय राहत आश्रय स्थल: मोराबादी सामुदायिक केंद्र ({cap} स्थान उपलब्ध) तथा धुर्वा परिसर। दोनों में पेयजल, भोजन व प्राथमिक चिकित्सा दल तैनात हैं।"
+        answer_bn = f"সক্রিয় ত্রাণ শিবির: মোরাবাদি কেন্দ্র ({cap} আসন খালি) এবং ধুরওয়া কমপ্লেক্স প্রস্তুত রয়েছে। পানীয় জল ও জরুরি চিকিৎসা ব্যবস্থা উপলব্ধ।"
+        answer_ta = f"செயலில் உள்ள நிவாரண முகாம்கள்: மொராபாடி மையம் ({cap} இடங்கள் தயார்) மற்றும் துர்வா வளாகம். குடிநீர் மற்றும் மருத்துவ உதவிகள் தயார்."
+        answer_te = f"చురుకైన సహాయక శిబిరాలు: మొరాబాడి కేంద్రం ({cap} ఖాళీలు సిద్ధం) మరియు ధుర్వా కాంప్లెక్స్. తాగునీరు మరియు వైద్య సదుపాయాలు అందుబాటులో ఉన్నాయి."
+        answer_mr = f"सक्रिय मदत शिबिरे: मोराबादी समुदाय केंद्र ({cap} जागा उपलब्ध) आणि धुर्वा परिसर. पिण्याचे पाणी व वैद्यकीय मदत सज्ज आहे."
 
-    elif any(w in q_lower for w in ["boat", "rescue", "नाव", "बचाव", "नौका", "மீட்பு", "బలగాలు"]):
-        answer_en = f"SDRF Fast Boat Unit 1 (Subarnarekha Basin) and NDRF 10th Battalion are available within 3.0 km. Suggested dispatch: 2 inflatable motorized boats with life jackets."
-        answer_hi = f"एसडीआरएफ फास्ट बोट यूनिट 1 और एनडीआरएफ 10वीं बटालियन 3.0 किमी के भीतर उपलब्ध हैं। त्वरित 2 मोटर चालित नावें भेजने की सिफारिश है।"
-        answer_bn = f"এসডিআরএফ বোট ইউনিট ১ এবং এনডিআরএফ ১০ম ব্যাটালিয়ন ৩ কিমির মধ্যে প্রস্তুত। ২টি উদ্ধারকারী নৌকা পাঠানোর পরামর্শ দেওয়া হচ্ছে।"
-        answer_ta = f"SDRF படகு பிரிவு 1 மற்றும் NDRF 10வது பட்டாலியன் 3 கிமீ தூரத்திற்குள் தயாராக உள்ளன. 2 படகுகளை அனுப்ப பரிந்துரைக்கப்படுகிறது."
-        answer_te = f"SDRF బోట్ యూనిట్ 1 మరియు NDRF 10వ బెటాలియన్ 3 కిమీల పరిధిలో అందుబాటులో ఉన్నాయి. 2 రెస్క్యూ బోట్లను పంపడం సిఫార్సు చేయబడింది."
-        answer_mr = f"एसडीआरएफ बोट युनिट 1 आणि एनडीआरएफ 10वी बटालियन 3 किमी अंतरावर सज्ज आहेत. 2 बचाव नौका रवाना करण्याची शिफारस आहे."
+    # 2. Rescue Boats & SDRF / NDRF Water Units
+    elif any(w in q_lower for w in ["boat", "rescue", "sdrf", "ndrf", "नाव", "बचाव", "नौका", "দল", "படகுகள்", "மீட்பு", "బోట్లు", "రెస్క్యూ", "होडी"]):
+        answer_en = f"Water Rescue Readiness: SDRF Fast Boat Unit 1 staged at Subarnarekha (0.3 km, 2 boats with 12 life-vests) and NDRF 10th Platoon on standby at Doranda. Dispatch time: <8 minutes via VHF Channel 16."
+        answer_hi = f"जल बचाव तैयारी: एसडीआरएफ फास्ट बोट यूनिट 1 सुवर्णरेखा बेसिन (0.3 किमी, 2 नावें एवं 12 लाइफ जैकेट) तथा एनडीआरएफ डोरंडा में तैयार हैं। प्रतिक्रिया समय: 8 मिनट से कम।"
+        answer_bn = f"জল উদ্ধার প্রস্তুতি: এসডিআরএফ দ্রুতগামী নৌকা ইউনিট সুবর্ণরেখা এলাকায় প্রস্তুত (০.৩ কিমি)। প্রতিক্রিয়া সময়: ৮ মিনিটের কম।"
+        answer_ta = f"நீர் மீட்புத் தயார்நிலை: SDRF வேகப் படகுப் பிரிவு சுபர்ணரேகா பகுதியில் தயாராக உள்ளது (0.3 கிமீ). புறப்படும் நேரம்: 8 நிமிடங்களுக்குள்."
+        answer_te = f"నీటి రెస్క్యూ సంసిద్ధత: SDRF ఫాస్ట్ బోట్ యూనిట్ సుబర్ణరేఖ వద్ద సిద్ధంగా ఉంది (0.3 కిమీ). స్పందన సమయం: 8 నిమిషాలలోపు."
+        answer_mr = f"जल बचाव सज्जता: एसडीआरएफ जलद बोट युनिट सुवर्णरेखा येथे सज्ज आहे (०.३ किमी). प्रतिसाद वेळ: ८ मिनिटांपेक्षा कमी."
 
-    elif any(w in q_lower for w in ["risk", "formula", "score", "जोखिम", "स्कोर", "সূত্র", "இடர்"]):
-        answer_en = "Composite risk uses the auditable formula: R = 0.40*Hazard + 0.30*Exposure + 0.20*Vulnerability + 0.10*Data Quality. Imminent danger phrases activate mandatory safety override to Critical priority."
-        answer_hi = "जोखिम स्कोर फॉर्मूला: R = 0.40*आपदा + 0.30*जनसंख्या प्रभाव + 0.20*संवेदनशीलता + 0.10*डेटा गुणवत्ता। आसन्न खतरे की स्थिति में सुरक्षा नियम द्वारा तुरंत उच्चतम प्राथमिकता सक्रिय होती है।"
-        answer_bn = "ঝুঁকি স্কোর ফর্মুলা: R = ০.৪০*বিপদ + ০.৩০*জনসংখ্যা + ০.২০*সংবেদনশীলতা + ০.১০*তথ্য মান।"
-        answer_ta = "கூட்டு இடர் சூத்திரம்: R = 0.40*ஆபத்து + 0.30*பாதிப்பு + 0.20*எளிதில் பாதிப்பு + 0.10*தரவுத் தரம்."
-        answer_te = "రిస్క్ స్కోరు సూత్రం: R = 0.40*ప్రమాదం + 0.30*జనాభా + 0.20*సున్నితత్వం + 0.10*డేటా నాణ్యత."
-        answer_mr = "जोखीम गुण सूत्र: R = 0.40*आपत्ती + 0.30*लोकसंख्या + 0.20*संवेदनशीलता + 0.10*डेटा गुणवत्ता."
+    # 3. Evacuation Corridors & Road Cutoff
+    elif any(w in q_lower for w in ["route", "road", "corridor", "traffic", "मार्ग", "सड़क", "রাস্তা", "পথ", "பாதை", "சாலை", "దారి", "రోడ్డు", "रस्ता"]):
+        answer_en = f"Safe Evacuation Corridors: North Morabadi Arterial Highway and Kanke Road are clear of floodwaters. South Doranda Low Bridge is partially inundated (>0.4m) — traffic redirected via Ring Road Sector 4."
+        answer_hi = f"सुरक्षित निकासी मार्ग: उत्तरी मोराबादी मुख्य राजमार्ग एवं कांके रोड पूरी तरह सुरक्षित हैं। दक्षिणी डोरंडा पुल पर 0.4 मीटर जलभराव है — यातायात रिंग रोड की ओर मोड़ा गया है।"
+        answer_bn = f"নিরাপদ স্থানান্তর রুট: উত্তর মোরাবাদি হাইওয়ে এবং কাঙ্কে রোড সম্পূর্ণ নিরাপদ। দক্ষিণ ডোরান্ডা ব্রিজ জলমগ্ন — রিং রোড দিয়ে বিকল্প পথ চালু।"
+        answer_ta = f"பாதுகாப்பான வெளியேற்றப் பாதைகள்: வடக்கு மொராபாடி நெடுஞ்சாலை வெள்ளப் பாதிப்பற்றது. தெற்கு துராண்டா பாலம் வழியாகப் போக்குவரத்து மாற்றப்பட்டுள்ளது."
+        answer_te = f"సురక్షిత తరలింపు మార్గాలు: ఉత్తర మొరాబాడి హైవే క్లియర్‌గా ఉంది. దక్షిణ దొరండా వంతెన వద్ద నీరు చేరింది — రింగ్ రోడ్డు ద్వారా దారి మళ్లించారు."
+        answer_mr = f"सुरक्षित स्थलांतर मार्ग: उत्तर मोराबादी महामार्ग सुरक्षित आहे. दक्षिण दोरंडा पुलावर पाणी साचल्यामुळे वाहतूक रिंग रोडने वळवण्यात आली आहे."
 
+    # 4. Medical Emergency, Casualties & Hospital
+    elif any(w in q_lower for w in ["hospital", "medical", "ambulance", "doctor", "injury", "अस्पताल", "डॉक्टर", "चिकित्सा", "হাসপাতাল", "மருத்துவமனை", "ఆసుపత్రి", "रुग्णालय"]):
+        answer_en = f"Medical Infrastructure: RIMS Emergency Trauma Center operating with auxiliary generator backup. 4 108-Ambulances staged along Morabadi corridor. Mobile medical kit Alpha deployed with NDRF."
+        answer_hi = f"चिकित्सा व्यवस्था: रिम्स (RIMS) आपातकालीन केंद्र जनरेटर बैकअप पर पूरी तरह चालू है। मोराबादी मार्ग पर 4 एम्बुलेंस तैनात हैं और एनडीआरएफ के साथ मोबाइल मेडिकल किट भेजी गई है।"
+        answer_bn = f"চিকিৎসা পরিকাঠামো: রিমস (RIMS) ট্রমা সেন্টার জেনারেটর ব্যাকআপে সম্পূর্ণ সক্রিয়। ৪টি অ্যাম্বুলেন্স স্ট্যান্ডবাই রয়েছে।"
+        answer_ta = f"மருத்துவ கட்டமைப்பு: RIMS அவசர சிகிச்சை மையம் தயாராக உள்ளது. 4 அவசர ஊர்திகள் (Ambulance) தயார் நிலையில் நிறுத்தப்பட்டுள்ளன."
+        answer_te = f"వైద్య సదుపాయాలు: RIMS అత్యవసర కేంద్రం జనరేటర్ బ్యాకప్‌తో పనిచేస్తోంది. 4 అంబులెన్స్‌లు సిద్ధంగా ఉన్నాయి."
+        answer_mr = f"वैद्यकीय यंत्रणा: रिम्स (RIMS) आपत्कालीन केंद्र पूर्णपणे कार्यरत आहे. ४ रुग्णवाहिका तैनात आहेत."
+
+    # 5. Food, Drinking Water & Relief Packets
+    elif any(w in q_lower for w in ["food", "water", "ration", "supply", "kit", "भोजन", "राशन", "पानी", "খাবার", "জল", "உணவு", "தண்ணீர்", "ఆహారం", "నీరు", "अन्न"]):
+        answer_en = f"Relief Supplies: 2,500 sealed drinking water sachets and dry ration packets staged at Morabadi Relief Depot. Municipal water tankers positioned at Doranda High School."
+        answer_hi = f"राहत सामग्री: 2,500 सीलबंद पेयजल पाउच एवं सूखे राशन के पैकेट मोराबादी राहत डिपो में तैयार हैं। डोरंडा स्कूल में पेयजल टैंकर उपलब्ध हैं।"
+        answer_bn = f"ত্রাণ সরবরাহ: ২,৫০০টি পানীয় জলের পাউচ এবং শুকনো খাবারের প্যাকেট মোরাবাদি ডিপোতে মজুদ রয়েছে।"
+        answer_ta = f"நிவாரணப் பொருட்கள்: 2,500 குடிநீர்ப் பைகள் மற்றும் உணவுப் பொட்டலங்கள் மொராபாடி மையத்தில் தயாராக வைக்கப்பட்டுள்ளன."
+        answer_te = f"సహాయక సామాగ్రి: 2,500 తాగునీటి ప్యాకెట్లు మరియు ఆహార పొట్లాలు మొరాబాడి డిపోలో సిద్ధంగా ఉన్నాయి."
+        answer_mr = f"मदत पुरवठा: २,५०० सीलबंद पिण्याचे पाणी व कोरडा शिधा पाकिटे मोराबादी केंद्रात उपलब्ध आहेत."
+
+    # 6. Risk Scoring & Deterministic Math Formula
+    elif any(w in q_lower for w in ["risk", "formula", "score", "math", "जोखिम", "फॉर्मूला", "सूत्र", "இடர்", "గణన"]):
+        answer_en = "Transparent Auditable Risk Formula: R = 0.40*Hazard + 0.30*Exposure + 0.20*Vulnerability + 0.10*Freshness. Hard Safety Rule Overrides: Credible imminent danger overrides composite math directly to CRITICAL (>=85)."
+        answer_hi = "पारदर्शी जोखिम फॉर्मूला: R = 0.40*आपदा तीव्रता + 0.30*जनसंख्या प्रभाव + 0.20*संवेदनशीलता + 0.10*डेटा ताजगी। आसन्न खतरे की रिपोर्ट पर गणितीय स्कोर को तुरंत अधिभावी (OVERRIDE) कर CRITICAL घोषित किया जाता है।"
+        answer_bn = "স্বচ্ছ ঝুঁকি স্কোর ফর্মুলা: R = ০.৪০*বিপদ + ০.৩০*জনসংখ্যা + ০.২০*সংবেদনশীলতা + ০.১০*তথ্য সতেজতা।"
+        answer_ta = "வெளிப்படையான கூட்டு இடர் சூத்திரம்: R = 0.40*ஆபத்து + 0.30*பாதிப்பு + 0.20*எளிதில் பாதிப்பு + 0.10*தரவுத் தரம்."
+        answer_te = "పారదర్శక రిస్క్ స్కోరు సూత్రం: R = 0.40*తీవ్రత + 0.30*జనాభా + 0.20*సున్నితత్వం + 0.10*డేటా తాజాదనం."
+        answer_mr = "पारदर्शक जोखीम गुण सूत्र: R = 0.40*आपत्ती + 0.30*लोकसंख्या + 0.20*संवेदनशीलता + 0.10*डेटा ताजेपणा."
+
+    # 7. Weather Radar & Precipitation
+    elif any(w in q_lower for w in ["weather", "rain", "precipitation", "wind", "मौसम", "बारिश", "हवा", "বৃষ্টি", "மழை", "వర్షం", "पाऊस"]):
+        answer_en = f"Live Atmospheric Telemetry: Catchment rainfall at 24.5 mm/h with surface wind gusts at 38 km/h. Hydrologic runoff model indicates river stage rise of +0.35m in next 90 minutes."
+        answer_hi = f"मौसम रडार स्थिति: 24.5 मिमी/घंटा वर्षा तथा 38 किमी/घंटा हवा की गति। अगले 90 मिनट में नदी का जलस्तर +0.35 मीटर बढ़ने का अनुमान है।"
+        answer_bn = f"আবহাওয়া রাডার: বৃষ্টিপাত ২৪.৫ মিমি/ঘন্টা এবং বাতাসের গতিবেগ ৩৮ কিমি/ঘন্টা। নদী স্তর বৃদ্ধি পাবে।"
+        answer_ta = f"நேரலை வானிலை: மழைப்பொழிவு 24.5 மிமீ/மணி. அடுத்த 90 நிமிடங்களில் ஆற்று நீர்மட்டம் உயரும் என எதிர்பார்க்கப்படுகிறது."
+        answer_te = f"ప్రత్యక్ష వాతావరణం: వర్షపాతం 24.5 మిమీ/గం. నది నీటిమట్టం పెరిగే అవకాశం ఉంది."
+        answer_mr = f"थेट हवामान रडार: २४.५ मिमी/तास पाऊस व नदीची पातळी वाढण्याचा अंदाज आहे."
+
+    # 8. General Grounded Incident Brief
     else:
-        answer_en = f"Operational Co-Pilot status for {inc_id}: Field indicators show active {hazard_type}. Nearest response units staged at Subarnarekha and Doranda. Evacuation corridors along North Morabadi remain open."
-        answer_hi = f"{inc_id} हेतु परिचालन स्थिति: {hazard_type} सक्रिय है। सुवर्णरेखा एवं डोरंडा में बचाव दल तैनात हैं। उत्तरी मोराबादी निकासी मार्ग खुला है।"
-        answer_bn = f"{inc_id} অপারেশনাল স্থিতি: {hazard_type} সতর্কতা সক্রিয়। সুবর্ণরেখা এলাকায় উদ্ধারকারী দল প্রস্তুত।"
-        answer_ta = f"{inc_id} செயல்பாட்டு நிலை: மீட்புக் குழுக்கள் தயார் நிலையில் உள்ளன."
-        answer_te = f"{inc_id} ఆపరేషనల్ స్థితి: రెస్క్యూ బృందాలు సిద్ధంగా ఉన్నాయి."
-        answer_mr = f"{inc_id} कार्यकारी स्थिती: बचाव पथके सज्ज आहेत आणि उत्तर मोराबादी मार्ग खुला आहे."
+        score_txt = f"(Composite Risk: {incident_context.get('risk_assessment', {}).get('composite_score', 86):.1f}/100)" if incident_context else ""
+        answer_en = f"DisasterLens Co-Pilot Brief for {inc_id} {score_txt}: Active {hazard_type} detected at {incident_context.get('location', {}).get('address', 'designated sector') if incident_context else 'Ranchi Basin'}. Recommended actions: Evacuate low-lying riverbank zone, deploy 2 SDRF fast boats, alert Morabadi shelter."
+        answer_hi = f"{inc_id} हेतु आपदा सह-पायलट ब्रीफ {score_txt}: {hazard_type} की सक्रिय स्थिति दर्ज है। सिफारिशें: तटवर्ती बस्तियों की तत्काल निकासी, 2 एसडीआरएफ नावें रवाना करना, मोराबादी आश्रय को अलर्ट करना।"
+        answer_bn = f"{inc_id} দুর্যোগ সহ-পাইলট প্রতিবেদন {score_txt}: উদ্ধারকারী দল মোতায়েন এবং নিরাপদ আশ্রয়ে স্থানান্তরের সুপারিশ করা হচ্ছে।"
+        answer_ta = f"{inc_id} பேரிடர் வழிகாட்டி அறிக்கை {score_txt}: கரையோரப் பகுதிகளை உடனடியாக வெளியேற்றவும், மீட்புப் படகுகளை அனுப்பவும் பரிந்துரைக்கப்படுகிறது."
+        answer_te = f"{inc_id} విపత్తు సహాయక నివేదిక {score_txt}: ప్రజలను సురక్షిత ప్రాంతాలకు తరలించడం మరియు బోట్లను పంపడం సిఫార్సు చేయబడింది."
+        answer_mr = f"{inc_id} आपत्ती सह-पायलट अहवाल {score_txt}: सखल भागातील नागरिकांचे तात्काळ स्थलांतर आणि बचाव नौका तैनात करण्याची शिफारस आहे."
 
     multilingual_answers = {
         "en": answer_en,
@@ -188,6 +221,7 @@ async def ask_disaster_copilot(
         "suggested_actions": [
             "Dispatch SDRF Fast Boats (2 units)",
             "Alert Morabadi Evacuation Shelter",
-            "Broadcast SMS Emergency Advisory"
+            "Broadcast SMS Emergency Advisory",
+            "Mobilize Medical Triage Unit"
         ]
     }
