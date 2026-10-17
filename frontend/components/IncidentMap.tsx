@@ -94,10 +94,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         map.removeLayer(tileLayerRef.current);
       }
 
-      let tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
       let tileOptions: any = {
-        subdomains: 'abcd',
-        attribution: '&copy; CARTO &copy; OpenStreetMap contributors',
+        attribution: '&copy; Esri &copy; OpenStreetMap contributors',
         maxZoom: 19,
         className: 'tactical-dark-tiles'
       };
@@ -110,10 +109,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           className: 'tactical-satellite-tiles'
         };
       } else if (baseMapStyle === 'street') {
-        tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
         tileOptions = {
-          subdomains: 'abcd',
-          attribution: '&copy; CARTO &copy; OpenStreetMap contributors',
+          attribution: '&copy; Esri, HERE, Garmin, USGS',
           maxZoom: 19,
           className: ''
         };

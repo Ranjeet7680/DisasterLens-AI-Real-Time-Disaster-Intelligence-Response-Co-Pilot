@@ -103,9 +103,8 @@ export default function ResourcesPage() {
         });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          subdomains: 'abcd',
-          attribution: '&copy; CARTO &copy; OpenStreetMap contributors',
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '&copy; Esri, HERE, Garmin, USGS',
           maxZoom: 19
         }).addTo(map);
 
@@ -174,7 +173,7 @@ export default function ResourcesPage() {
         onOpenSimulator={() => setIsSimulatorOpen(true)}
       />
 
-      <main className="max-w-[1700px] w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 flex-1 pt-6">
+      <main className="max-w-[1700px] w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 flex-1 pt-8 sm:pt-10">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
           <div>
