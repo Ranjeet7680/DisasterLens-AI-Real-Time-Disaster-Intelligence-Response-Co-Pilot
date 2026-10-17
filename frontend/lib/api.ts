@@ -1,7 +1,72 @@
 import { Incident, IncidentDetail, Alert, ResourceItem, AuditEvent, DashboardMetrics } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-export const WS_BASE = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
+// Intelligent base URL resolution that prioritizes 127.0.0.1 over localhost to prevent Windows IPv6 DNS drops
+export function getApiBase(): string {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'http://127.0.0.1:8000';
+    }
+    return `http://${host}:8000`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+}
+
+export function getWsBase(): string {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'ws://127.0.0.1:8000';
+    }
+    return `ws://${host}:8000`;
+  }
+  return process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:8000';
+}
+
+export const API_BASE = getApiBase();
+export const WS_BASE = getWsBase();
+
+/**
+ * Resilient fetch wrapper with dual IPv4/IPv6 localhost retry and graceful fallbacks.
+ * Prevents Next.js dev overlay "Failed to fetch" modal from triggering during server reload.
+ */
+async function safeFetch<T>(endpoint: string, options?: RequestInit, fallback?: T): Promise<T> {
+  const base = getApiBase();
+  const primaryUrl = `${base}${endpoint}`;
+
+  try {
+    const res = await fetch(primaryUrl, {
+      ...options,
+      cache: 'no-store'
+    });
+    if (!res.ok) {
+      console.warn(`[API WARN] ${endpoint} returned ${res.status}: ${res.statusText}`);
+      if (fallback !== undefined) return fallback;
+      throw new Error(`API error ${res.status}`);
+    }
+    return await res.json();
+  } catch (err: any) {
+    // Attempt alternate host retry (127.0.0.1 <-> localhost)
+    try {
+      const altHost = base.includes('127.0.0.1') ? 'http://localhost:8000' : 'http://127.0.0.1:8000';
+      const altRes = await fetch(`${altHost}${endpoint}`, {
+        ...options,
+        cache: 'no-store'
+      });
+      if (altRes.ok) {
+        return await altRes.json();
+      }
+    } catch {
+      // Alternate retry also failed
+    }
+
+    console.warn(`[API Offline Fallback] ${endpoint} temporarily unreachable:`, err?.message || err);
+    if (fallback !== undefined) {
+      return fallback;
+    }
+    throw err;
+  }
+}
 
 export async function fetchIncidents(params?: { hazard_type?: string; severity?: string; status?: string }): Promise<Incident[]> {
   const query = new URLSearchParams();
@@ -9,15 +74,12 @@ export async function fetchIncidents(params?: { hazard_type?: string; severity?:
   if (params?.severity) query.append('severity', params.severity);
   if (params?.status) query.append('status', params.status);
 
-  const res = await fetch(`${API_BASE}/api/incidents?${query.toString()}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch incidents');
-  return res.json();
+  const qs = query.toString() ? `?${query.toString()}` : '';
+  return safeFetch<Incident[]>(`/api/incidents${qs}`, undefined, []);
 }
 
-export async function fetchIncidentDetail(id: string): Promise<IncidentDetail> {
-  const res = await fetch(`${API_BASE}/api/incidents/${id}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Failed to fetch incident ${id}`);
-  return res.json();
+export async function fetchIncidentDetail(id: string): Promise<IncidentDetail | null> {
+  return safeFetch<IncidentDetail | null>(`/api/incidents/${id}`, undefined, null);
 }
 
 export async function submitIncident(payload: {
@@ -28,48 +90,36 @@ export async function submitIncident(payload: {
   description: string;
   metadata?: any;
 }): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/incidents`, {
+  return safeFetch('/api/incidents', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error('Failed to submit incident');
-  return res.json();
 }
 
 export async function triggerAnalysis(id: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/incidents/${id}/analyze`, { method: 'POST' });
-  if (!res.ok) throw new Error('Failed to trigger AI workflow analysis');
-  return res.json();
+  return safeFetch(`/api/incidents/${id}/analyze`, { method: 'POST' });
 }
 
 export async function fetchAlerts(state?: string): Promise<Alert[]> {
   const query = state ? `?state=${state}` : '';
-  const res = await fetch(`${API_BASE}/api/alerts${query}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch alerts');
-  return res.json();
+  return safeFetch<Alert[]>(`/api/alerts${query}`, undefined, []);
 }
 
 export async function acknowledgeAlert(alertId: string, operatorName: string = 'EOC Commander'): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/alerts/${alertId}/ack?operator_name=${encodeURIComponent(operatorName)}`, {
+  return safeFetch(`/api/alerts/${alertId}/ack?operator_name=${encodeURIComponent(operatorName)}`, {
     method: 'POST'
   });
-  if (!res.ok) throw new Error('Failed to acknowledge alert');
-  return res.json();
 }
 
 export async function resolveAlert(alertId: string, operatorName: string = 'EOC Commander'): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/alerts/${alertId}/resolve?operator_name=${encodeURIComponent(operatorName)}`, {
+  return safeFetch(`/api/alerts/${alertId}/resolve?operator_name=${encodeURIComponent(operatorName)}`, {
     method: 'POST'
   });
-  if (!res.ok) throw new Error('Failed to resolve alert');
-  return res.json();
 }
 
 export async function fetchResources(): Promise<ResourceItem[]> {
-  const res = await fetch(`${API_BASE}/api/resources`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch resources');
-  return res.json();
+  return safeFetch<ResourceItem[]>('/api/resources', undefined, []);
 }
 
 export async function reviewRecommendation(
@@ -79,7 +129,7 @@ export async function reviewRecommendation(
   reviewNotes: string = '',
   modifiedAction?: string
 ): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/recommendations/${recId}/review`, {
+  return safeFetch(`/api/recommendations/${recId}/review`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -89,40 +139,42 @@ export async function reviewRecommendation(
       modified_action: modifiedAction
     })
   });
-  if (!res.ok) throw new Error('Failed to submit review decision');
-  return res.json();
 }
 
 export async function fetchAuditEvents(limit: number = 30): Promise<AuditEvent[]> {
-  const res = await fetch(`${API_BASE}/api/audit?limit=${limit}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch audit records');
-  return res.json();
+  return safeFetch<AuditEvent[]>(`/api/audit?limit=${limit}`, undefined, []);
 }
 
 export async function fetchMetrics(): Promise<DashboardMetrics> {
-  const res = await fetch(`${API_BASE}/api/metrics`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch metrics');
-  return res.json();
+  const defaultMetrics: DashboardMetrics = {
+    total_active_incidents: 0,
+    critical_incidents: 0,
+    high_incidents: 0,
+    active_alerts: 0,
+    pending_approvals: 0,
+    safety_overrides_triggered: 0,
+    resource_capacity: {
+      total: 0,
+      available: 0,
+      deployed_pct: 0
+    },
+    average_agent_latency_ms: 0
+  };
+  return safeFetch<DashboardMetrics>('/api/metrics', undefined, defaultMetrics);
 }
 
 export async function fetchScenarios(): Promise<any[]> {
-  const res = await fetch(`${API_BASE}/api/simulator/scenarios`, { cache: 'no-store' });
-  if (!res.ok) return [];
-  return res.json();
+  return safeFetch<any[]>('/api/simulator/scenarios', undefined, []);
 }
 
 export async function triggerScenario(scenarioKey: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/simulator/trigger`, {
+  return safeFetch('/api/simulator/trigger', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ scenario_key: scenarioKey })
   });
-  if (!res.ok) throw new Error('Failed to trigger simulated scenario');
-  return res.json();
 }
 
 export async function fetchWeather(lat: number, lon: number): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/weather?latitude=${lat}&longitude=${lon}`, { cache: 'no-store' });
-  if (!res.ok) return null;
-  return res.json();
+  return safeFetch<any>(`/api/weather?latitude=${lat}&longitude=${lon}`, undefined, null);
 }

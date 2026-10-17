@@ -65,17 +65,17 @@ export default function CommandDashboard() {
         fetchResources(),
         fetchMetrics()
       ]);
-      setIncidents(incList);
-      setAlerts(altList);
-      setResources(resList);
-      setMetrics(mtrx);
+      if (incList && incList.length > 0) setIncidents(incList);
+      if (altList && altList.length > 0) setAlerts(altList);
+      if (resList && resList.length > 0) setResources(resList);
+      if (mtrx && mtrx.total_active_incidents !== undefined) setMetrics(mtrx);
 
       // Auto select first incident if none selected
-      if (!selectedIncident && incList.length > 0) {
+      if (!selectedIncident && incList && incList.length > 0) {
         setSelectedIncident(incList[0]);
       }
     } catch (err) {
-      console.error('Failed to load dashboard data:', err);
+      console.warn('Dashboard poll temporary drop:', err);
     }
   }, [selectedIncident]);
 
@@ -83,8 +83,10 @@ export default function CommandDashboard() {
   useEffect(() => {
     if (selectedIncident) {
       fetchIncidentDetail(selectedIncident.incident_id)
-        .then((detail) => setIncidentDetail(detail))
-        .catch((err) => console.error(err));
+        .then((detail) => {
+          if (detail) setIncidentDetail(detail);
+        })
+        .catch((err) => console.warn('Incident detail fetch warn:', err));
     }
   }, [selectedIncident]);
 
