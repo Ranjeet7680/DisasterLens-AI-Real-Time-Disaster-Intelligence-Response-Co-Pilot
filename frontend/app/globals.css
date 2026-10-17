@@ -98,9 +98,9 @@ body {
   z-index: 400;
 }
 
-/* High-clarity tactical map tiles - CartoDB & Esri native rendering */
+/* High-clarity tactical map tiles - Esri native rendering */
 .tactical-dark-tiles .leaflet-tile {
-  filter: brightness(0.95) contrast(1.08) saturate(1.1) !important;
+  filter: invert(100%) brightness(0.85) contrast(1.2) !important;
 }
 
 .tactical-satellite-tiles .leaflet-tile {

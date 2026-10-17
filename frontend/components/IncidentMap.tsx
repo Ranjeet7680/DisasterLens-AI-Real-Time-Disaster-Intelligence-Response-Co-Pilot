@@ -29,7 +29,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   const hazardCircleLayerRef = useRef<any>(null);
 
   // Tactical layer toggle states
-  const [baseMapStyle, setBaseMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
+  const [baseMapStyle, setBaseMapStyle] = useState<'dark' | 'satellite' | 'street' | 'topo'>('dark');
   const [showRadar, setShowRadar] = useState(true);
   const [showResources, setShowResources] = useState(true);
   const [showHazardZones, setShowHazardZones] = useState(true);
@@ -94,9 +94,9 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         map.removeLayer(tileLayerRef.current);
       }
 
-      let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+      let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
       let tileOptions: any = {
-        attribution: '&copy; Esri &copy; OpenStreetMap contributors',
+        attribution: '&copy; Esri, HERE, Garmin, USGS',
         maxZoom: 19,
         className: 'tactical-dark-tiles'
       };
@@ -112,6 +112,13 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
         tileOptions = {
           attribution: '&copy; Esri, HERE, Garmin, USGS',
+          maxZoom: 19,
+          className: ''
+        };
+      } else if (baseMapStyle === 'topo') {
+        tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}';
+        tileOptions = {
+          attribution: '&copy; Esri, USGS, NOAA',
           maxZoom: 19,
           className: ''
         };
@@ -407,6 +414,18 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         >
           <Map className="w-3.5 h-3.5" />
           <span>Street</span>
+        </button>
+
+        <button
+          onClick={() => setBaseMapStyle('topo')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            baseMapStyle === 'topo'
+              ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <span>⛰️</span>
+          <span>Topo</span>
         </button>
       </div>
 
