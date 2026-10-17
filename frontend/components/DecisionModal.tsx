@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { Recommendation } from '../lib/types';
-import { Check, X, Edit3, ShieldAlert, CheckCircle2, UserCheck, Package, BookOpen } from 'lucide-react';
+import { Check, X, Edit3, ShieldAlert, CheckCircle2, UserCheck, Package, BookOpen, Sparkles } from 'lucide-react';
 import { reviewRecommendation } from '../lib/api';
+import { playApprovalSuccessSound } from '../lib/sound';
 
 interface DecisionModalProps {
   isOpen: boolean;
@@ -38,6 +39,9 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
     setLoadingId(recId);
     try {
       await reviewRecommendation(recId, decision, reviewerName, notes, actionText);
+      if (decision === 'approved' || decision === 'modified') {
+        playApprovalSuccessSound();
+      }
       setEditingId(null);
       setNotes('');
       onRefresh();
@@ -49,7 +53,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
@@ -58,8 +62,8 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
-                {lang === 'en' ? 'Human Approval & Response Decisions' : 'मानवीय अनुमोदन एवं प्रतिक्रिया निर्णय'}
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <span>{lang === 'en' ? 'Human Approval & Resource Dispatch' : 'मानवीय अनुमोदन एवं संसाधन परिनियोजन'}</span>
               </h2>
               <p className="text-xs text-slate-400">
                 {lang === 'en' ? `Incident ${incidentId} • Authorized EOC Operations Review` : `घटना ${incidentId} • अधिकृत समीक्षा`}
@@ -106,7 +110,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
                   key={rec.id}
                   className={`p-4 rounded-xl border text-xs transition-all ${
                     isApproved
-                      ? 'bg-emerald-950/20 border-emerald-800/80'
+                      ? 'bg-emerald-950/25 border-emerald-700/80 shadow-lg shadow-emerald-950/30'
                       : isRejected
                       ? 'bg-red-950/20 border-red-800/80 opacity-70'
                       : 'bg-slate-950/70 border-slate-800'
@@ -216,7 +220,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
                         <button
                           onClick={() => handleDecision(rec.id, 'approved')}
                           disabled={loadingId === rec.id}
-                          className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 shadow transition-colors"
+                          className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 shadow-lg shadow-emerald-950/60 transition-colors active:scale-95"
                         >
                           <Check className="w-3.5 h-3.5" />
                           <span>{lang === 'en' ? 'Approve & Dispatch' : 'स्वीकृत करें'}</span>

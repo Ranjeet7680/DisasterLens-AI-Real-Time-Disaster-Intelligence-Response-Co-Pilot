@@ -1,15 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldAlert, Radio, Activity, MapPin, Database, Sparkles, PlusCircle } from 'lucide-react';
+import { ShieldAlert, Radio, Activity, Volume2, VolumeX, Sparkles, PlusCircle, FileText } from 'lucide-react';
+import { toggleAudio, getAudioState } from '../lib/sound';
 
 interface HeaderProps {
   lang: 'en' | 'hi';
   setLang: (lang: 'en' | 'hi') => void;
   onOpenReportModal: () => void;
   onOpenSimulator: () => void;
+  onOpenExport?: () => void;
   activeAlertCount?: number;
 }
 
@@ -18,9 +20,16 @@ export const Header: React.FC<HeaderProps> = ({
   setLang,
   onOpenReportModal,
   onOpenSimulator,
+  onOpenExport,
   activeAlertCount = 0
 }) => {
   const pathname = usePathname();
+  const [soundOn, setSoundOn] = useState(true);
+
+  const handleToggleSound = () => {
+    const newState = toggleAudio();
+    setSoundOn(newState);
+  };
 
   const navItems = [
     { name: lang === 'en' ? 'Command Dashboard' : 'कमांड डैशबोर्ड', href: '/' },
@@ -49,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 hidden sm:block">
-                  {lang === 'en' ? 'Real-Time Disaster Intelligence Platform' : 'वास्तविक समय आपदा खुफिया मंच'}
+                  {lang === 'en' ? 'Real-Time Disaster Intelligence & Response' : 'वास्तविक समय आपदा खुफिया मंच'}
                 </p>
               </div>
             </Link>
@@ -75,12 +84,25 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </nav>
 
-          {/* Actions & Language Switcher */}
-          <div className="flex items-center gap-3">
+          {/* Action Toolbar */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Audio Tactical Alert Sound Toggle */}
+            <button
+              onClick={handleToggleSound}
+              title={soundOn ? 'Tactical Audio Alerts: ON' : 'Tactical Audio Alerts: OFF'}
+              className={`p-1.5 rounded-lg border transition-colors ${
+                soundOn
+                  ? 'bg-slate-900 border-slate-700 text-amber-400 hover:bg-slate-800'
+                  : 'bg-slate-950 border-slate-800 text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              {soundOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </button>
+
             {/* Live Indicator */}
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-xs font-mono">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800 text-emerald-400 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="hidden lg:inline">{lang === 'en' ? 'LIVE WS' : 'लाइव'}</span>
+              <span>{lang === 'en' ? 'LIVE WS' : 'लाइव'}</span>
             </div>
 
             {/* Language Toggle */}
@@ -103,6 +125,18 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
+            {/* Export SitRep button */}
+            {onOpenExport && (
+              <button
+                onClick={onOpenExport}
+                title="Export Official Situation Report"
+                className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                <span>SitRep</span>
+              </button>
+            )}
+
             {/* Quick Report Button */}
             <button
               onClick={onOpenReportModal}
@@ -118,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-semibold shadow-md transition-all active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>{lang === 'en' ? 'Demo Simulator' : 'सिमुलेटर'}</span>
+              <span>{lang === 'en' ? 'Simulator' : 'सिमुलेटर'}</span>
             </button>
           </div>
         </div>

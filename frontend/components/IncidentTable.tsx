@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Incident } from '../lib/types';
-import { AlertCircle, AlertTriangle, Layers, MapPin, ShieldCheck, ChevronRight, Copy } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Layers, MapPin, ShieldCheck, ChevronRight, Copy, ArrowUpDown } from 'lucide-react';
 
 interface IncidentTableProps {
   incidents: Incident[];
@@ -17,29 +17,50 @@ export const IncidentTable: React.FC<IncidentTableProps> = ({
   onSelectIncident,
   lang
 }) => {
+  const [sortBy, setSortBy] = useState<'risk' | 'time'>('risk');
+
+  const sortedIncidents = [...incidents].sort((a, b) => {
+    if (sortBy === 'risk') {
+      const scoreA = a.risk_assessment?.composite_score ?? (a.severity === 'critical' ? 90 : 50);
+      const scoreB = b.risk_assessment?.composite_score ?? (b.severity === 'critical' ? 90 : 50);
+      return scoreB - scoreA;
+    }
+    return new Date(b.reported_at).getTime() - new Date(a.reported_at).getTime();
+  });
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl flex flex-col h-full">
-      {/* Table Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+      {/* Table Header with Sort */}
+      <div className="p-3 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-amber-400" />
-          <h3 className="text-sm font-bold text-white">
+          <h3 className="text-xs font-bold text-white">
             {lang === 'en' ? 'Prioritized Incident Queue' : 'प्राथमिकता आधारित घटना कतार'}
           </h3>
         </div>
-        <span className="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
-          {incidents.length} {lang === 'en' ? 'Events' : 'घटनाएं'}
-        </span>
+
+        <div className="flex items-center gap-2 text-xs">
+          <button
+            onClick={() => setSortBy(sortBy === 'risk' ? 'time' : 'risk')}
+            className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-950 border border-slate-800"
+          >
+            <ArrowUpDown className="w-3 h-3 text-amber-400" />
+            <span>{sortBy === 'risk' ? (lang === 'en' ? 'By Risk' : 'जोखिम अनुसार') : (lang === 'en' ? 'By Time' : 'समय अनुसार')}</span>
+          </button>
+          <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded-full">
+            {incidents.length}
+          </span>
+        </div>
       </div>
 
       {/* Incident List */}
       <div className="divide-y divide-slate-800/80 overflow-y-auto max-h-[500px]">
-        {incidents.length === 0 ? (
+        {sortedIncidents.length === 0 ? (
           <div className="p-8 text-center text-slate-500 text-xs">
             {lang === 'en' ? 'No incidents reported. Use simulator or submit a new report.' : 'कोई घटना दर्ज नहीं है।'}
           </div>
         ) : (
-          incidents.map((inc) => {
+          sortedIncidents.map((inc) => {
             const isSelected = selectedIncident?.incident_id === inc.incident_id;
             const score = inc.risk_assessment?.composite_score ?? 50;
             const band = inc.risk_assessment?.severity_band || inc.severity.toUpperCase();
@@ -55,13 +76,13 @@ export const IncidentTable: React.FC<IncidentTableProps> = ({
               <div
                 key={inc.incident_id}
                 onClick={() => onSelectIncident(inc)}
-                className={`p-3.5 cursor-pointer transition-colors text-xs ${
+                className={`p-3 cursor-pointer transition-all text-xs ${
                   isSelected
-                    ? 'bg-slate-800/90 border-l-4 border-amber-500'
+                    ? 'bg-slate-800/95 border-l-4 border-amber-500 shadow-md'
                     : 'hover:bg-slate-800/40'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="flex items-start justify-between gap-2 mb-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-mono font-bold text-slate-200">{inc.incident_id}</span>
                     <span className="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] text-slate-300 uppercase font-semibold">
@@ -88,7 +109,7 @@ export const IncidentTable: React.FC<IncidentTableProps> = ({
                 </div>
 
                 {/* Description */}
-                <p className="text-slate-300 line-clamp-2 leading-snug mb-2 font-normal">
+                <p className="text-slate-300 line-clamp-2 leading-snug mb-1.5 font-normal">
                   {inc.description}
                 </p>
 
