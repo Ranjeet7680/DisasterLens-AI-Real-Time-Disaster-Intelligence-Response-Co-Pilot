@@ -38,7 +38,8 @@ export const Header: React.FC<HeaderProps> = ({
     { name: lang === 'en' ? 'Response Resources' : 'प्रतिक्रिया संसाधन', href: '/resources' },
     { name: lang === 'en' ? 'Evacuation GIS' : 'निकासी गलियारे', href: '/evacuation' },
     { name: lang === 'en' ? 'Predictive Analytics' : 'पूर्वानुमान एवं विश्लेषण', href: '/analytics' },
-    { name: lang === 'en' ? 'Audit Trail' : 'ऑडिट लॉग', href: '/audit' }
+    { name: lang === 'en' ? 'Audit Trail' : 'ऑडिट लॉग', href: '/audit' },
+    { name: lang === 'en' ? 'IBM LinuxONE' : 'आईबीएम लिनक्सवन', href: '/linuxone', isSpecial: true }
   ];
 
   return (
@@ -80,12 +81,15 @@ export const Header: React.FC<HeaderProps> = ({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-slate-800 text-amber-400 border border-slate-700 shadow-sm'
-                      : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                      : item.isSpecial
+                        ? 'bg-cyan-950/60 text-cyan-300 border border-cyan-700/60 hover:bg-cyan-900/60 hover:text-white shadow-sm shadow-cyan-950'
+                        : 'text-slate-300 hover:bg-slate-900 hover:text-white'
                   }`}
                 >
+                  {item.isSpecial && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
                   {item.name}
                 </Link>
               );
