@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060913" />
+      <stop offset="50%" stop-color="#0b1122" />
+      <stop offset="100%" stop-color="#050811" />
+    </linearGradient>
+
+    <linearGradient id="hGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#f97316" />
+    </linearGradient>
+    <linearGradient id="eGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <linearGradient id="vGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="dGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <pattern id="gridPattern3" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255, 255, 255, 0.03)" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="620" fill="url(#bgGrad3)" rx="16" />
+  <rect width="1100" height="620" fill="url(#gridPattern3)" rx="16" />
+  <rect width="1100" height="620" fill="none" stroke="rgba(245, 158, 11, 0.25)" stroke-width="1.5" rx="16" />
+
+  <!-- Diagram Header -->
+  <g transform="translate(40, 45)">
+    <rect x="0" y="-12" width="220" height="22" rx="4" fill="rgba(245, 158, 11, 0.15)" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1" />
+    <text x="10" y="3" fill="#f59e0b" font-family="-apple-system, sans-serif" font-size="10" font-weight="800" letter-spacing="1">
+      EXPLAINABLE RISK ENGINE &amp; SAFETY RULES
+    </text>
+    <text x="0" y="32" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="22" font-weight="900" letter-spacing="-0.3">
+      Mathematical Formulation &amp; Hard Safety Overrides
+    </text>
+    <text x="0" y="52" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="12">
+      Deterministic 4-factor multi-attribute ranking with life-safety constraint guarantees.
+    </text>
+  </g>
+
+  <!-- FORMULA HERO BANNER -->
+  <g transform="translate(40, 120)">
+    <rect width="1020" height="85" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.5" />
+
+    <text x="30" y="34" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="1">
+      DETERMINISTIC COMPOSITE RISK EQUATION (0 TO 100 SCALE):
+    </text>
+
+    <!-- Formula Text -->
+    <g transform="translate(30, 64)">
+      <text x="0" y="0" fill="#ffffff" font-family="monospace" font-size="24" font-weight="900">R  =  </text>
+      <text x="75" y="0" fill="#ef4444" font-family="monospace" font-size="24" font-weight="900">0.40 × H</text>
+      <text x="210" y="0" fill="#94a3b8" font-family="monospace" font-size="24" font-weight="900"> + </text>
+      <text x="260" y="0" fill="#f59e0b" font-family="monospace" font-size="24" font-weight="900">0.30 × E</text>
+      <text x="395" y="0" fill="#94a3b8" font-family="monospace" font-size="24" font-weight="900"> + </text>
+      <text x="445" y="0" fill="#3b82f6" font-family="monospace" font-size="24" font-weight="900">0.20 × V</text>
+      <text x="580" y="0" fill="#94a3b8" font-family="monospace" font-size="24" font-weight="900"> + </text>
+      <text x="630" y="0" fill="#10b981" font-family="monospace" font-size="24" font-weight="900">0.10 × D</text>
+    </g>
+
+    <!-- Priority Bands Key -->
+    <g transform="translate(760, 20)">
+      <rect width="230" height="48" rx="8" fill="rgba(10, 16, 32, 0.9)" stroke="rgba(71, 85, 105, 0.4)" stroke-width="1" />
+      <text x="14" y="20" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="10" font-weight="700">SEVERITY BANDS:</text>
+      <text x="14" y="38" fill="#ef4444" font-family="monospace" font-size="9.5" font-weight="800">CRIT ≥ 75</text>
+      <text x="74" y="38" fill="#f97316" font-family="monospace" font-size="9.5" font-weight="800">HIGH 55-74</text>
+      <text x="144" y="38" fill="#eab308" font-family="monospace" font-size="9.5" font-weight="800">MED 35-54</text>
+    </g>
+  </g>
+
+  <!-- 4 COMPONENT FACTOR CARDS -->
+  <g transform="translate(40, 225)">
+    <!-- H: Hazard Severity (40%) -->
+    <g transform="translate(0, 0)">
+      <rect width="240" height="195" rx="12" fill="rgba(239, 68, 68, 0.08)" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1.5" />
+      <rect width="240" height="34" rx="12" fill="rgba(239, 68, 68, 0.2)" />
+      <text x="14" y="22" font-size="14">🌊</text>
+      <text x="36" y="22" fill="#ef4444" font-family="-apple-system, sans-serif" font-size="12" font-weight="900">H: Hazard Severity (40%)</text>
+
+      <text x="14" y="56" fill="#fca5a5" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="700">Underlying Signals:</text>
+      <text x="14" y="76" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• River gauge stage delta</text>
+      <text x="14" y="94" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Precipitation rate (mm/hr)</text>
+      <text x="14" y="112" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Flash flood surge speed</text>
+      <text x="14" y="130" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Embankment breach depth</text>
+
+      <rect x="12" y="148" width="216" height="34" rx="6" fill="rgba(15, 23, 42, 0.9)" />
+      <text x="20" y="170" fill="#f87171" font-family="monospace" font-size="10" font-weight="700">MAX WEIGHT: 40.0 pts</text>
+    </g>
+
+    <!-- E: Population Exposure (30%) -->
+    <g transform="translate(260, 0)">
+      <rect width="240" height="195" rx="12" fill="rgba(245, 158, 11, 0.08)" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1.5" />
+      <rect width="240" height="34" rx="12" fill="rgba(245, 158, 11, 0.2)" />
+      <text x="14" y="22" font-size="14">👥</text>
+      <text x="36" y="22" fill="#f59e0b" font-family="-apple-system, sans-serif" font-size="12" font-weight="900">E: Exposure (30%)</text>
+
+      <text x="14" y="56" fill="#fde68a" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="700">Underlying Signals:</text>
+      <text x="14" y="76" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Census population density</text>
+      <text x="14" y="94" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Hospital &amp; clinic vicinity</text>
+      <text x="14" y="112" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Residential settlement count</text>
+      <text x="14" y="130" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Schools &amp; nursery facilities</text>
+
+      <rect x="12" y="148" width="216" height="34" rx="6" fill="rgba(15, 23, 42, 0.9)" />
+      <text x="20" y="170" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="700">MAX WEIGHT: 30.0 pts</text>
+    </g>
+
+    <!-- V: Vulnerability (20%) -->
+    <g transform="translate(520, 0)">
+      <rect width="240" height="195" rx="12" fill="rgba(59, 130, 246, 0.08)" stroke="rgba(59, 130, 246, 0.4)" stroke-width="1.5" />
+      <rect width="240" height="34" rx="12" fill="rgba(59, 130, 246, 0.2)" />
+      <text x="14" y="22" font-size="14">🏚️</text>
+      <text x="36" y="22" fill="#3b82f6" font-family="-apple-system, sans-serif" font-size="12" font-weight="900">V: Vulnerability (20%)</text>
+
+      <text x="14" y="56" fill="#bfdbfe" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="700">Underlying Signals:</text>
+      <text x="14" y="76" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Low-lying terrain elevation</text>
+      <text x="14" y="94" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Mud / kutcha house ratio</text>
+      <text x="14" y="112" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Grid power outage status</text>
+      <text x="14" y="130" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Road wash-out accessibility</text>
+
+      <rect x="12" y="148" width="216" height="34" rx="6" fill="rgba(15, 23, 42, 0.9)" />
+      <text x="20" y="170" fill="#60a5fa" font-family="monospace" font-size="10" font-weight="700">MAX WEIGHT: 20.0 pts</text>
+    </g>
+
+    <!-- D: Data Freshness (10%) -->
+    <g transform="translate(780, 0)">
+      <rect width="240" height="195" rx="12" fill="rgba(16, 185, 129, 0.08)" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1.5" />
+      <rect width="240" height="34" rx="12" fill="rgba(16, 185, 129, 0.2)" />
+      <text x="14" y="22" font-size="14">⏱️</text>
+      <text x="36" y="22" fill="#10b981" font-family="-apple-system, sans-serif" font-size="12" font-weight="900">D: Freshness (10%)</text>
+
+      <text x="14" y="56" fill="#a7f3d0" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="700">Underlying Signals:</text>
+      <text x="14" y="76" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Source credibility multiplier</text>
+      <text x="14" y="94" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Exponential time decay</text>
+      <text x="14" y="112" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Multi-source confirmation</text>
+      <text x="14" y="130" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="10">• Operator verification badge</text>
+
+      <rect x="12" y="148" width="216" height="34" rx="6" fill="rgba(15, 23, 42, 0.9)" />
+      <text x="20" y="170" fill="#34d399" font-family="monospace" font-size="10" font-weight="700">MAX WEIGHT: 10.0 pts</text>
+    </g>
+  </g>
+
+  <!-- HARD SAFETY OVERRIDE RULES SECTION -->
+  <g transform="translate(40, 440)">
+    <rect width="1020" height="145" rx="12" fill="rgba(220, 38, 38, 0.12)" stroke="rgba(239, 68, 68, 0.6)" stroke-width="1.5" />
+
+    <!-- Red Beacon & Header -->
+    <circle cx="28" cy="28" r="10" fill="#ef4444" opacity="0.8" />
+    <circle cx="28" cy="28" r="5" fill="#ffffff" />
+    <text x="48" y="32" fill="#f87171" font-family="-apple-system, sans-serif" font-size="13" font-weight="900" letter-spacing="1">
+      HARD SAFETY CONSTRAINT OVERRIDE RULE SYSTEM (SAFETY OVERRIDE = TRUE)
+    </text>
+    <text x="48" y="50" fill="#fca5a5" font-family="-apple-system, sans-serif" font-size="11">
+      Protects citizens from statistical bias: A low composite score due to missing data NEVER delays imminent life-safety response.
+    </text>
+
+    <!-- 3 Safety Rule Conditions Grid -->
+    <g transform="translate(20, 68)">
+      <!-- Rule 1 -->
+      <rect x="0" y="0" width="315" height="60" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1" />
+      <text x="12" y="20" fill="#f87171" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="800">1. Trapped Human Life Hazard</text>
+      <text x="12" y="36" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="9.5">Keyword match: "rooftop", "trapped",</text>
+      <text x="12" y="50" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="9.5">"submerged house", "children stranded"</text>
+
+      <!-- Rule 2 -->
+      <rect x="330" y="0" width="315" height="60" rx="8" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1" />
+      <text x="12" y="20" fill="#f87171" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="800">2. Critical Infrastructure Threat</text>
+      <text x="12" y="36" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="9.5">Keyword match: "dam overflow", "hospital ICU",</text>
+      <text x="12" y="50" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="9.5">"bridge collapse", "power grid sub-station"</text>
+
+      <!-- Rule 3: Escalation Action -->
+      <rect x="660" y="0" width="320" height="60" rx="8" fill="rgba(220, 38, 38, 0.3)" stroke="rgba(239, 68, 68, 0.7)" stroke-width="1.5" />
+      <text x="12" y="20" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="10.5" font-weight="900">AUTOMATIC ESCALATION ACTION</text>
+      <text x="12" y="36" fill="#fee2e2" font-family="-apple-system, sans-serif" font-size="9.5">Mandates score ≥ 85, forces CRITICAL tier,</text>
+      <text x="12" y="50" fill="#fee2e2" font-family="-apple-system, sans-serif" font-size="9.5">and triggers immediate EOC audio alert siren.</text>
+    </g>
+  </g>
+</svg>

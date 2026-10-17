@@ -1,182 +1,227 @@
+<p align="center">
+  <img src="docs/assets/header-banner.svg" alt="DisasterLens AI Header Banner" width="100%" />
+</p>
+
 # DisasterLens AI — Real-Time Disaster Intelligence & Response Co-Pilot
-> **Hackathon MVP**: Real-Time AI for Critical Decisions in Disaster Response & Flood Management
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016%20(App%20Router)-black?logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue?logo=typescript)](https://www.typescriptlang.org)
-[![Python](https://img.shields.io/badge/Language-Python%203.11-3776AB?logo=python)](https://python.org)
-[![Tests](https://img.shields.io/badge/Tests-Pytest%206%2F6%20Passed-brightgreen)](backend/tests)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
+> **Hackathon MVP**: Real-Time AI for Critical Decisions in Extreme Weather, Flash Floods, and Multi-Hazard Response.
 
----
-
-## 📌 Executive Overview
-During floods, cyclones, landslides, and extreme weather emergencies, decision-makers are inundated with incomplete reports, conflicting civilian calls, and stale sensors. **DisasterLens AI** acts as a real-time decision-support co-pilot for disaster response.
-
-Instead of forcing officials to manually parse disjointed feeds, DisasterLens AI:
-1. **Aggregates fragmented data** (citizen reports, automated river gauges, weather radars, and operator feeds).
-2. **Orchestrates 4 specialized AI agents** to classify hazards, deduplicate claims, calculate explainable composite risk, and propose SOP-aligned response plans.
-3. **Applies hard safety override rules** so that credible imminent-danger reports (e.g., trapped citizens or dam sluice surges) are immediately escalated and never masked by low data completeness.
-4. **Enforces human-in-the-loop approvals** with an immutable audit log before any high-consequence response resources are dispatched.
-5. **Streams live situational updates** via WebSockets across an interactive geospatial map in English and Hindi.
+<p align="center">
+  <a href="#-system-architecture--multi-agent-pipeline"><img src="https://img.shields.io/badge/Architecture-Multi--Agent%20State%20Machine-0284c7?style=for-the-badge&logo=probot" alt="Multi-Agent" /></a>
+  <a href="#-mathematical-risk-scoring--hard-safety-rules"><img src="https://img.shields.io/badge/Risk%20Engine-R%20%3D%200.4H%2B0.3E%2B0.2V%2B0.1D-f59e0b?style=for-the-badge" alt="Risk Formula" /></a>
+  <a href="#-voice-system--6-indian-local-languages"><img src="https://img.shields.io/badge/Voice%20AI-6%20Indian%20Languages-10b981?style=for-the-badge&logo=google-translate" alt="Indian Languages" /></a>
+  <a href="#-human-in-the-loop-review-gate"><img src="https://img.shields.io/badge/Safety-Human--in--the--Loop%20EOC-ef4444?style=for-the-badge&logo=shield" alt="Human in the loop" /></a>
+  <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi" alt="FastAPI" /></a>
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Frontend-Next.js%2016%20Turbopack-000000?style=for-the-badge&logo=next.js" alt="Next.js" /></a>
+</p>
 
 ---
 
-## ⚡ Answers to the 5 Critical Disaster Response Questions
+## 📌 Executive Summary
 
-| Question | DisasterLens AI Solution |
+During floods, cyclones, landslides, and extreme weather emergencies, critical disaster information arrives asynchronously from fragmented sources. Incident commanders and emergency managers are forced to manually parse conflicting civilian calls, lagging weather forecasts, and duplicate incident reports.
+
+**DisasterLens AI** acts as a real-time decision-support co-pilot for disaster response. Instead of forcing officials to guess severity, DisasterLens AI:
+1. **Ingests & Validates Data**: Real-time Open-Meteo weather APIs, river level sensors, citizen mobile SOS reports, and emergency simulator feeds.
+2. **Orchestrates 4 Specialized AI Agents**: Hazard Intelligence, Spatial Deduplication, Deterministic Risk Scoring, and Approved SOP Response Planning.
+3. **Applies Hard Safety Constraint Overrides**: Credible imminent-danger reports (e.g. citizens trapped on rooftops or submerged hospital ICUs) are immediately escalated to `CRITICAL` priority—guaranteeing that sparse data completeness never masks life-threatening emergencies.
+4. **Enforces Human-in-the-Loop Authorization**: Every high-consequence resource dispatch (NDRF boats, pumps, shelters) requires explicit officer review and creates an immutable audit trail.
+5. **Speaks in 6 Indian Local Languages**: Built-in voice dictation and speech synthesis across Hindi (हिंदी), Bengali (বাংলা), Tamil (தமிழ்), Telugu (తెలుగు), Marathi (मराठी), and English.
+
+---
+
+## ⚡ The 5 Critical Disaster Response Questions Answered
+
+| Critical Question | DisasterLens AI Solution |
 | :--- | :--- |
-| **1. Where is the disaster happening?** | Leaflet OpenStreetMap with localized geofencing, pulsing hazard radius circles, and nearest emergency shelter/depot overlays. |
-| **2. Which communities are at greatest risk?** | Multi-factor risk engine accounting for population exposure (E: 30%) and community vulnerability (V: 20%). |
-| **3. How urgently must each incident be addressed?** | Explainable composite score ($R = 0.40H + 0.30E + 0.20V + 0.10D$) with automated `CRITICAL` safety override for life-safety threats. |
-| **4. Which emergency resources may be required?** | Response Planning Agent automatically matches nearby available rescue boats, NDRF platoons, dewatering pumps, and shelters. |
-| **5. What should responders investigate or do next?** | Evidence-linked Standard Operating Procedure (SOP) recommendations presented for Incident Commander review and one-click dispatch. |
+| **1. Where is the disaster happening?** | Tactical Leaflet GIS with CartoDB Dark/Voyager & Esri Satellite, pulsing hazard radius rings, and animated laser dispatch vectors. |
+| **2. Which communities are at greatest risk?** | Multi-factor exposure and vulnerability modeling accounting for low elevation, kutcha dwellings, hospitals, and density. |
+| **3. How urgently must each incident be addressed?** | Explainable composite score ($R = 0.40H + 0.30E + 0.20V + 0.10D$) with automated `CRITICAL` safety override for life hazards. |
+| **4. Which emergency resources are required?** | Response Planning Agent automatically matches nearest available rescue boats, SDRF platoons, dewatering pumps, and shelters. |
+| **5. What should responders investigate or do next?** | Evidence-linked Standard Operating Procedure (SOP) recommendations presented for Commander review and one-click dispatch. |
 
 ---
 
-## 🧠 Multi-Agent Architecture
+## 🧠 System Architecture & Multi-Agent Pipeline
 
-```
-                      ┌────────────────────────────────────────┐
-                      │ Ingestion: Citizen / Sensor / Operator │
-                      └──────────────────┬─────────────────────┘
-                                         │
-                                         ▼
-   ┌───────────────────────────────────────────────────────────────────────────┐
-   │                     DECISION ORCHESTRATOR AGENT                           │
-   │                                                                           │
-   │  ┌─────────────────────────┐           ┌───────────────────────────────┐  │
-   │  │ 1. Hazard Intelligence  │           │ 2. Report Validation Agent    │  │
-   │  │    Agent                │           │    • Geodistance deduplication│  │
-   │  │    • River gauge sensors├──────────►│    • Source credibility checks│  │
-   │  │    • Precipitation radar│           │    • Missing field quarantine │  │
-   │  │    • Flood stage window │           └───────────────┬───────────────┘  │
-   │  └─────────────────────────┘                           │                  │
-   │                                                        ▼                  │
-   │  ┌─────────────────────────┐           ┌───────────────────────────────┐  │
-   │  │ 4. Response Planning    │           │ 3. Risk Assessment Agent      │  │
-   │  │    Agent                │           │    • R=0.4H+0.3E+0.2V+0.1D    │  │
-   │  │    • Nearby resource fit│◄──────────┤    • Hard Safety Overrides    │  │
-   │  │    • Evidence linking   │           │    • Auditable factor breakdown│ │
-   │  │    • Action options     │           └───────────────────────────────┘  │
-   │  └───────────┬─────────────┘                                              │
-   └──────────────┼────────────────────────────────────────────────────────────┘
-                  │
-                  ▼
-   ┌──────────────────────────────┐          ┌────────────────────────────────┐
-   │ Human-in-the-Loop Review EOC │─────────►│ Immutable Audit Log & Broadcast│
-   │ (Approve / Edit / Reject)    │          │ (WebSocket Stream to Dashboard)│
-   └──────────────────────────────┘          └────────────────────────────────┘
-```
+DisasterLens AI employs a modular monolith architecture utilizing a specialized state machine where each agent has explicit deterministic responsibilities. Numerical risk calculations are computed with validated mathematical code, while LLMs (Gemini 2.5 Flash with deterministic fallback) interpret and summarize evidence.
+
+<p align="center">
+  <img src="docs/assets/multi-agent-pipeline.svg" alt="Multi-Agent AI Decision Pipeline Architecture" width="100%" />
+</p>
 
 ### Specialized Agents:
 1. **Agent 1 — Hazard Intelligence Agent** (`backend/app/agents/hazard.py`):
-   - Queries live Open-Meteo weather APIs and river level sensors.
-   - Detects flood stage (*Extreme Danger, Danger Threshold, Warning*), forecast surge window, and affected radius in km.
+   - Queries real-time Open-Meteo weather APIs and river gauge sensors.
+   - Evaluates precipitation (mm/h), surface runoff, water rise speed (m/45min), and flood stage (*Warning, Danger, Extreme Danger*).
 2. **Agent 2 — Report Validation Agent** (`backend/app/agents/validation.py`):
-   - Spatial-temporal deduplication using the Haversine formula ($\le 2.5\text{ km}$ and time window).
-   - Validates coordinate bounds, filters unverified claims, and computes weighted source credibility.
+   - Spatial-temporal deduplication using the Haversine formula ($\le 2.5\text{ km}$ geofence) and Jaccard word-overlap similarity.
+   - Clusters duplicate civilian reports into verified event groups and calculates weighted source credibility.
 3. **Agent 3 — Risk Assessment Agent** (`backend/app/agents/risk.py`):
-   - Computes transparent composite score:
-     $$R = 0.40H + 0.30E + 0.20V + 0.10D$$
-   - **Hard Safety Escalation Rule**: Evaluates critical life-safety indicators (e.g. *"trapped on rooftops"*, *"dam overflow"*, *"submerged hospital ICU"*). Automatically escalates score and assigns `CRITICAL` priority with auditable rationale.
+   - Computes transparent composite risk on a 0–100 scale: $R = 0.40H + 0.30E + 0.20V + 0.10D$.
+   - Evaluates hard safety constraints (trapped citizens, dam breaches, hospital ICU risks) and forces priority escalation when triggered.
 4. **Agent 4 — Response Planning Agent** (`backend/app/agents/response.py`):
    - Evaluates active regional inventory: shelters, rescue boats, NDRF platoons, and dewatering pumps.
-   - Generates priority-staged actionable options linked to verified evidence.
+   - Proposes SOP-aligned action alternatives with required approvals and logistics feasibility.
 5. **Agent 5 — Orchestrator & Briefing Synthesizer** (`backend/app/agents/orchestrator.py`):
-   - Enforces sequential execution, fallback resilience, persistence, and bilingual decision briefings in English and Hindi.
+   - Coordinates execution order, logs telemetry latencies, and synthesizes bilingual decision briefs in English and Indian local languages.
 
 ---
 
-## 📐 Mathematical Risk Scoring Logic
+## 📐 Mathematical Risk Scoring & Hard Safety Rules
 
-$$\text{Composite Risk } (R) = 0.40 \times H + 0.30 \times E + 0.20 \times V + 0.10 \times D$$
+<p align="center">
+  <img src="docs/assets/risk-formula-diagram.svg" alt="Mathematical Risk Formula & Hard Safety Constraint Matrix" width="100%" />
+</p>
+
+### Composite Risk Formulation
+The composite risk score $R$ is calculated deterministically on a 0 to 100 scale:
+
+$$R = 0.40 \times H + 0.30 \times E + 0.20 \times V + 0.10 \times D$$
 
 - **Hazard Severity ($H$, 40%)**: Derived from river stage, gauge delta, and localized precipitation (0–100).
-- **Population Exposure ($E$, 30%)**: Accounts for urban density, presence of hospitals, schools, and dense settlements (0–100).
-- **Community Vulnerability ($V$, 20%)**: Accounts for terrain elevation, mud/kutcha dwellings, and power outages (0–100).
-- **Data Quality & Freshness ($D$, 10%)**: Product of source credibility factor and time recency (0–100).
+- **Population Exposure ($E$, 30%)**: Accounts for urban population density, presence of hospitals, schools, and dense settlements (0–100).
+- **Community Vulnerability ($V$, 20%)**: Accounts for terrain elevation, mud/kutcha dwellings, and power grid outages (0–100).
+- **Data Quality & Freshness ($D$, 10%)**: Product of source credibility factor and exponential time decay recency (0–100).
 
-> **Production Safeguard**: A low score must never suppress a credible emergency alert solely because data is incomplete. The built-in hard safety override guarantees immediate escalation when life-threatening conditions are detected.
+### Hard Safety Constraint Override System
+> **Core Safety Principle**: A low composite score must **never** delay an emergency response solely because data is sparse or incomplete.
+
+When any of the following imminent-danger conditions are detected, the system overrides numerical weighting:
+- **Human Life Imminently Threatened**: Reports describing families trapped on rooftops, submerged dwellings, or stranded infants automatically trigger `SAFETY_OVERRIDE = TRUE`.
+- **Critical Infrastructure Failure**: Dam sluice gate overflow, hospital ICU flooding, or bridge collapse.
+- **Enforced Action**: The incident score is forced to $\ge 85$, severity band is locked to `CRITICAL`, and audible EOC sirens are broadcasted immediately.
 
 ---
 
-## 🚀 Quickstart Guide
+## 🔄 End-to-End Operational Lifecycle & Dispatch
+
+<p align="center">
+  <img src="docs/assets/eoc-workflow.svg" alt="End-to-End Emergency Response & Resource Orchestration Workflow" width="100%" />
+</p>
+
+1. **Ingestion**: Field civilian mobile reports, automated sensor streams, or simulator injects arrive via FastAPI REST / WebSockets.
+2. **AI Analysis**: The 4 agents run in sequential synchronization (< 1,600 ms latency).
+3. **EOC Visualization**: The incident appears on the Leaflet GIS Map with pulsing threat beacons and dynamic SVG radial dials.
+4. **Multilingual Co-Pilot**: Commanders query evacuation corridors and resource triage via voice in their preferred local language.
+5. **Human Authorization**: The Incident Commander reviews SOP recommendations, edits notes, and clicks **Approve**.
+6. **Tactical Dispatch**: Laser dispatch vectors animate from resource depots (shelters, boats, pumps) to the disaster epicenter.
+
+---
+
+## 🎙️ Voice System & 6 Indian Local Languages
+
+DisasterLens AI is built specifically for Indian Emergency Operations Centers (EOCs), supporting end-to-end multilingual workflows:
+
+| Language | Native Script | Voice Synthesis | SOS Dictation | Co-Pilot Briefings |
+| :--- | :--- | :---: | :---: | :---: |
+| **English** | English | ✅ Supported | ✅ Supported | ✅ Complete |
+| **Hindi** | हिन्दी | ✅ Supported | ✅ Supported | ✅ Complete |
+| **Bengali** | বাংলা | ✅ Supported | ✅ Supported | ✅ Complete |
+| **Tamil** | தமிழ் | ✅ Supported | ✅ Supported | ✅ Complete |
+| **Telugu** | తెలుగు | ✅ Supported | ✅ Supported | ✅ Complete |
+| **Marathi** | मराठी | ✅ Supported | ✅ Supported | ✅ Complete |
+
+### Voice Features:
+- **Speech-to-Text SOS Intake**: Field reporters or operators can click the microphone button to dictate emergency reports hands-free.
+- **Audio Equalizer Waveform**: Speech playback displays a 5-bar live equalizer waveform synced to browser audio output.
+- **Auto-Readout Mode**: Toggle `Audio ON` in the top navigation bar to have the co-pilot speak all critical incident briefings upon arrival.
+
+---
+
+## 🎮 Interactive Disaster Scenario Simulator
+
+A built-in simulator allows hackathon judges and evaluators to trigger realistic disaster scenarios with zero external API dependencies:
+
+1. **Subarnarekha River Basin Flash Flood (High-Yield Trigger)**: Water rise 1.8m in 45 minutes; over 60 residential houses submerged; families stranded on rooftops.
+2. **Heavy Urban Inundation & Embankment Breach**: River breached near Doranda lowlands; 120+ households waterlogged; electrical substation failure.
+3. **Cyclone Storm Surge & Waterlogging**: 75 km/h surface wind gusts, coastal shelter staging required.
+4. **Dam Sluice Gate Overflow Crisis**: Upstream reservoir water at 98% capacity; emergency spillway discharge initiated.
+5. **Hospital ICU Power & Inundation Failure**: Critical emergency medical facility triage requiring backup generators and boat evacuation.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript |
+| **UI & Styling** | Tailwind CSS v4, Lucide Icons, Custom Glowing Radial Gauge SVGs |
+| **GIS Mapping** | Leaflet with CartoDB Dark Matter, CartoDB Voyager, and Esri Satellite CDN tiles |
+| **Backend API** | Python 3.11, FastAPI, Uvicorn, Pydantic v2 |
+| **Agent Orchestration** | Custom Python State Machine / LangGraph pattern |
+| **AI Models & LLM** | Google Gemini 2.5 Flash with deterministic offline regex/NLP fallback |
+| **Real-Time Streaming** | FastAPI WebSockets (`/ws/incidents`) & HTML5 Web Audio API |
+| **Testing** | Pytest (7/7 unit & integration tests passing) |
+
+---
+
+## 🚀 Quickstart & Local Installation
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 18+ and npm
+- **Node.js** 18+ & **npm**
+- **Python** 3.11+
+- *(Optional)* `GEMINI_API_KEY` for live generative responses (runs seamlessly in offline simulated mode without a key).
 
-### 1. Start Backend (FastAPI)
+### 1. Clone the Repository
 ```bash
-# From repository root
-cd backend
-python -m venv venv
+git clone https://github.com/Ranjeet7680/DisasterLens-AI-Real-Time-Disaster-Intelligence-Response-Co-Pilot.git
+cd DisasterLens-AI-Real-Time-Disaster-Intelligence-Response-Co-Pilot
+```
 
-# Windows:
-.\venv\Scripts\activate
-# Linux/macOS:
-source venv/bin/activate
+### 2. Backend Setup
+```bash
+# Navigate to project root
+python -m venv backend/venv
 
-pip install -r requirements.txt
+# Activate virtual environment (Windows PowerShell)
+.\backend\venv\Scripts\Activate.ps1
+# Or on Linux/macOS: source backend/venv/bin/activate
+
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Start backend server (binds to 0.0.0.0:8000)
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-*Backend API documentation available at: `http://localhost:8000/docs`*
+API Documentation will be live at: `http://localhost:8000/docs`
 
-### 2. Run Tests
+### 3. Frontend Setup
+```bash
+# In a new terminal, navigate to frontend/
+cd frontend
+
+# Install Node dependencies
+npm install
+
+# Start Next.js development server
+npm run dev
+```
+Dashboard will be live at: `http://localhost:3000`
+
+---
+
+## 🧪 Automated Test Suite
+
+Run the full automated test suite covering deterministic mathematical scoring, hard safety override rules, Haversine deduplication, and multilingual co-pilot services:
+
 ```bash
 .\backend\venv\Scripts\pytest.exe -v
 ```
 
-### 3. Start Frontend (Next.js)
-```bash
-cd frontend
-npm install
-npm run dev
+```text
+============================= test session starts =============================
+backend/tests/test_agents.py::test_full_orchestrator_pipeline PASSED     [ 14%]
+backend/tests/test_agents.py::test_disaster_copilot_indian_languages PASSED [ 28%]
+backend/tests/test_risk_engine.py::test_risk_formula_calculation PASSED  [ 42%]
+backend/tests/test_risk_engine.py::test_hard_safety_rule_imminent_danger_override PASSED [ 57%]
+backend/tests/test_validation.py::test_haversine_distance PASSED         [ 71%]
+backend/tests/test_validation.py::test_word_overlap_similarity PASSED    [ 85%]
+backend/tests/test_validation.py::test_validation_schema_and_coordinates PASSED [100%]
+============================== 7 passed in 3.74s ==============================
 ```
-*Frontend application available at: `http://localhost:3000`*
-
-### 4. Or Run via Docker Compose
-```bash
-docker-compose up --build
-```
 
 ---
 
-## 🎬 7-Step Hackathon Demonstration Walkthrough
-
-1. **Open the Dashboard**: Navigate to `http://localhost:3000`. Observe live geospatial markers, regional alerts, and real-time metrics.
-2. **Open the Demo Simulator**: Click **"Demo Simulator"** in the top navigation.
-3. **Trigger Scenario 1 (Primary Flood)**: Click *"Inject Scenario Live"* for **Subarnarekha River Flash Inundation**.
-   - Notice the instant WebSocket broadcast.
-   - The map animates to Subarnarekha Basin with an impact radius zone.
-   - The Hazard and Risk cards reveal $R=88$ (`CRITICAL`), showing the exact formula calculation.
-4. **Trigger Scenario 2 (Validation & Deduplication)**: Click *"Harmu River Crossing (Duplicate Test)"*.
-   - Watch the Validation Agent flag the report with a `DUP` badge linked to the parent event.
-5. **Trigger Scenario 3 (Safety Override Test)**: Click *"Dhurwa Dam Sluice Warning"*.
-   - Notice the glowing red **"SAFETY OVERRIDE ACTIVATED"** banner explaining that imminent life threats override composite suppression.
-6. **Demonstrate Human Approval**:
-   - Click **"Review & Approve Recommendations"**.
-   - Inspect the SOP-backed actions, matched rescue boats, and evidence citations.
-   - Edit or approve the deployment under the Commander call-sign.
-   - Notice how the shelter capacity and boat status update immediately.
-7. **Inspect the Immutable Audit Trail**:
-   - Click **"Audit Trail"** in the top header.
-   - Verify every agent run, safety override reason, and human approval signature.
-
----
-
-## 🛡️ Safeguards & Production Hardening
-
-| Risk | DisasterLens AI Safeguard |
-| :--- | :--- |
-| **LLM Hallucinations** | Numerical scoring is computed strictly by deterministic Python algorithms; LLMs are confined to narrative synthesis and constrained schemas. |
-| **Provider/API Outage** | Dual-tier fallback engine: if Gemini or Open-Meteo times out, localized deterministic calibrated algorithms guarantee 100% uptime. |
-| **Unauthorized Deployment** | Role-based Human-in-the-Loop review gates all consequential actions; autonomous public evacuation dispatch is strictly prohibited without authorized sign-off. |
-| **False / Malicious Reports** | Multi-source credibility weighting and spatial-temporal clustering flag suspicious citizen claims. |
-
----
-
-## 👥 Contributors & Hackathon Team
-Developed for **Real-Time AI for Critical Decisions — Disaster Management Hackathon MVP**.
-DisasterLens AI — *Turning fragmented disaster chaos into clear, explainable, and decisive action.*
+## 📄 License
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
