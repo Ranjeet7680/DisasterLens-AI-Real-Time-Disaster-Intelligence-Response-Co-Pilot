@@ -1,0 +1,47 @@
+[
+  {
+    "sensor_id": "SENS-SUBARNA-01",
+    "sensor_type": "ultrasonic_water_level",
+    "location": {
+      "latitude": 23.3650,
+      "longitude": 85.3150,
+      "name": "Subarnarekha Bridge Telemetry Gauge"
+    },
+    "current_value": 14.8,
+    "unit": "meters",
+    "warning_threshold": 12.0,
+    "danger_threshold": 13.5,
+    "status": "danger_exceeded",
+    "last_ping": "2026-10-17T10:28:00+05:30"
+  },
+  {
+    "sensor_id": "SENS-HARMU-02",
+    "sensor_type": "acoustic_flow_sensor",
+    "location": {
+      "latitude": 23.3340,
+      "longitude": 85.3190,
+      "name": "Harmu Channel Sluice Station"
+    },
+    "current_value": 4.2,
+    "unit": "m/s",
+    "warning_threshold": 3.0,
+    "danger_threshold": 4.0,
+    "status": "warning",
+    "last_ping": "2026-10-17T10:29:15+05:30"
+  },
+  {
+    "sensor_id": "SENS-DHURWA-03",
+    "sensor_type": "reservoir_piezometer",
+    "location": {
+      "latitude": 23.2950,
+      "longitude": 85.2750,
+      "name": "Dhurwa Dam Crest Sensor"
+    },
+    "current_value": 99.4,
+    "unit": "percentage_capacity",
+    "warning_threshold": 90.0,
+    "danger_threshold": 98.0,
+    "status": "danger_exceeded",
+    "last_ping": "2026-10-17T10:30:00+05:30"
+  }
+]

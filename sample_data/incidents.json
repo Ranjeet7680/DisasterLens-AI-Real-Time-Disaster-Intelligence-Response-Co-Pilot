@@ -1,0 +1,59 @@
+[
+  {
+    "incident_id": "INC-1001",
+    "hazard_type": "flash_flood",
+    "location": {
+      "latitude": 23.3620,
+      "longitude": 85.3120,
+      "address": "Subarnarekha Riverfront, Namkum Basin",
+      "region": "Subarnarekha Basin"
+    },
+    "severity": "high",
+    "reported_at": "2026-10-17T10:00:00+05:30",
+    "source": "sensor_stream",
+    "verification_status": "verified",
+    "description": "Telemetry river gauge station R-04 indicates rapid level rise (+1.9m above danger mark). Low-lying residential structures inundated.",
+    "metadata": {
+      "river_gauge_id": "R-04",
+      "water_level_m": 12.8,
+      "danger_mark_m": 10.9
+    }
+  },
+  {
+    "incident_id": "INC-1002",
+    "hazard_type": "flood",
+    "location": {
+      "latitude": 23.3325,
+      "longitude": 85.3175,
+      "address": "Harmu River Crossing Bridge",
+      "region": "Harmu Catchment"
+    },
+    "severity": "medium",
+    "reported_at": "2026-10-17T10:15:00+05:30",
+    "source": "citizen_report",
+    "verification_status": "unverified",
+    "description": "Water overflowing bridge causeway. Commuters stranded, heavy current preventing four-wheeler crossing.",
+    "metadata": {
+      "citizen_phone": "+91-98350-XXXXX"
+    }
+  },
+  {
+    "incident_id": "INC-1003",
+    "hazard_type": "flood",
+    "location": {
+      "latitude": 23.2980,
+      "longitude": 85.2780,
+      "address": "Dhurwa Dam Spillway Lower Embankment",
+      "region": "Dhurwa Basin"
+    },
+    "severity": "critical",
+    "reported_at": "2026-10-17T10:20:00+05:30",
+    "source": "operator",
+    "verification_status": "verified",
+    "description": "Dam sluice emergency discharge initiated at 450 cumecs due to catchment saturation. Downstream hamlet evacuations required immediately.",
+    "metadata": {
+      "dam_capacity_pct": 99.4,
+      "discharge_rate_cumecs": 450
+    }
+  }
+]
