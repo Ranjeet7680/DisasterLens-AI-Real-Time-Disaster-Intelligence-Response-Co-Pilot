@@ -15,6 +15,11 @@
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Frontend-Next.js%2016%20Turbopack-000000?style=for-the-badge&logo=next.js" alt="Next.js" /></a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/Ranjeet7680/DisasterLens-AI-Real-Time-Disaster-Intelligence-Response-Co-Pilot/wiki"><img src="https://img.shields.io/badge/Official%20Wiki-39%20Diagrams%20%7C%2013%20Pages-8b5cf6?style=for-the-badge&logo=gitbook&logoColor=white" alt="Official Wiki" /></a>
+  <a href="https://frontend-weld-nu-50.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel%20Production-10b981?style=for-the-badge&logo=vercel" alt="Vercel Live Demo" /></a>
+</p>
+
 ---
 
 ## 📌 Executive Summary
