@@ -1,26 +1,34 @@
 import { Incident, IncidentDetail, Alert, ResourceItem, AuditEvent, DashboardMetrics } from './types';
 
-// Intelligent base URL resolution that prioritizes 127.0.0.1 over localhost to prevent Windows IPv6 DNS drops
+// Intelligent base URL resolution supporting both local development and Vercel cloud deployment
 export function getApiBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, '');
+  }
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1') {
       return 'http://127.0.0.1:8000';
     }
-    return `http://${host}:8000`;
+    // In production Vercel deployment without NEXT_PUBLIC_API_URL, use relative path
+    return '';
   }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+  return 'http://127.0.0.1:8000';
 }
 
 export function getWsBase(): string {
+  if (process.env.NEXT_PUBLIC_WS_URL) {
+    return process.env.NEXT_PUBLIC_WS_URL.replace(/\/+$/, '');
+  }
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1') {
       return 'ws://127.0.0.1:8000';
     }
-    return `ws://${host}:8000`;
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${host}`;
   }
-  return process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:8000';
+  return 'ws://127.0.0.1:8000';
 }
 
 export const API_BASE = getApiBase();
@@ -32,7 +40,7 @@ export const WS_BASE = getWsBase();
  */
 async function safeFetch<T>(endpoint: string, options?: RequestInit, fallback?: T): Promise<T> {
   const base = getApiBase();
-  const primaryUrl = `${base}${endpoint}`;
+  const primaryUrl = base ? `${base}${endpoint}` : endpoint;
 
   try {
     const res = await fetch(primaryUrl, {
@@ -46,18 +54,20 @@ async function safeFetch<T>(endpoint: string, options?: RequestInit, fallback?: 
     }
     return await res.json();
   } catch (err: any) {
-    // Attempt alternate host retry (127.0.0.1 <-> localhost)
-    try {
-      const altHost = base.includes('127.0.0.1') ? 'http://localhost:8000' : 'http://127.0.0.1:8000';
-      const altRes = await fetch(`${altHost}${endpoint}`, {
-        ...options,
-        cache: 'no-store'
-      });
-      if (altRes.ok) {
-        return await altRes.json();
+    // Attempt alternate host retry only if running on local backend
+    if (base && (base.includes('127.0.0.1') || base.includes('localhost'))) {
+      try {
+        const altHost = base.includes('127.0.0.1') ? 'http://localhost:8000' : 'http://127.0.0.1:8000';
+        const altRes = await fetch(`${altHost}${endpoint}`, {
+          ...options,
+          cache: 'no-store'
+        });
+        if (altRes.ok) {
+          return await altRes.json();
+        }
+      } catch {
+        // Alternate retry also failed
       }
-    } catch {
-      // Alternate retry also failed
     }
 
     console.warn(`[API Offline Fallback] ${endpoint} temporarily unreachable:`, err?.message || err);
