@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#0f172a" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#030712" stop-opacity="1"/>
+    </radialGradient>
+
+    <!-- Tactical Shield Neon Gradient -->
+    <linearGradient id="shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="35%" stop-color="#f97316"/>
+      <stop offset="70%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+
+    <!-- Radar Lens Gradient -->
+    <linearGradient id="lens-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+
+    <!-- Core AI Glow -->
+    <radialGradient id="core-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#38bdf8"/>
+      <stop offset="70%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Drop Shadows and Glows -->
+    <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="intense-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur1"/>
+      <feGaussianBlur stdDeviation="2" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base Tactical Hexagonal Shield -->
+  <path d="M 60,6 
+           L 106,24 
+           L 106,66 
+           C 106,94 84,111 60,118 
+           C 36,111 14,94 14,66 
+           L 14,24 Z" 
+        fill="url(#bg-glow)" 
+        stroke="url(#shield-grad)" 
+        stroke-width="3" 
+        filter="url(#neon-glow)"/>
+
+  <!-- Inner Subtle Shield Inset -->
+  <path d="M 60,14 
+           L 98,29 
+           L 98,64 
+           C 98,87 79,102 60,108 
+           C 41,102 22,87 22,64 
+           L 22,29 Z" 
+        fill="none" 
+        stroke="#38bdf8" 
+        stroke-width="1" 
+        stroke-dasharray="4, 3" 
+        opacity="0.5"/>
+
+  <!-- Radar Concentric Range Rings (The "Lens") -->
+  <circle cx="60" cy="58" r="32" fill="none" stroke="#0ea5e9" stroke-width="1.2" opacity="0.4"/>
+  <circle cx="60" cy="58" r="24" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5, 3" opacity="0.6"/>
+  <circle cx="60" cy="58" r="16" fill="none" stroke="#f97316" stroke-width="1.5" opacity="0.75"/>
+
+  <!-- Tactical Crosshair Cross-axes -->
+  <line x1="60" y1="26" x2="60" y2="42" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+  <line x1="60" y1="74" x2="60" y2="90" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+  <line x1="28" y1="58" x2="44" y2="58" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+  <line x1="76" y1="58" x2="92" y2="58" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Ticks on Perimeter -->
+  <circle cx="60" cy="26" r="1.5" fill="#38bdf8"/>
+  <circle cx="60" cy="90" r="1.5" fill="#38bdf8"/>
+  <circle cx="28" cy="58" r="1.5" fill="#38bdf8"/>
+  <circle cx="92" cy="58" r="1.5" fill="#38bdf8"/>
+
+  <!-- Cyclone / Flood Wave Vortex Arms (Lens Aperture Blades) -->
+  <path d="M 60,34 C 74,34 84,45 84,58 C 84,65 80,71 74,75 C 69,72 67,65 67,58 C 67,49 63,42 60,34 Z" 
+        fill="url(#lens-grad)" 
+        opacity="0.85"/>
+  <path d="M 60,82 C 46,82 36,71 36,58 C 36,51 40,45 46,41 C 51,44 53,51 53,58 C 53,67 57,74 60,82 Z" 
+        fill="url(#shield-grad)" 
+        opacity="0.85"/>
+
+  <!-- Central Core AI Eye Beacon -->
+  <circle cx="60" cy="58" r="8" fill="url(#core-glow)" filter="url(#intense-glow)"/>
+  <circle cx="60" cy="58" r="3.5" fill="#ffffff"/>
+
+  <!-- Threat Warning Indicator Pulse at Top Shield Notch -->
+  <polygon points="60,11 63,17 57,17" fill="#ef4444" filter="url(#intense-glow)"/>
+</svg>

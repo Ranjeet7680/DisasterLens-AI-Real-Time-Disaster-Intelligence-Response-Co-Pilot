@@ -45,9 +45,14 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16 gap-3">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 group whitespace-nowrap">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-600 text-white shadow-lg shadow-red-950/60 group-hover:scale-105 transition-all">
-                <ShieldAlert className="w-5 h-5" />
+            <Link href="/" className="flex items-center gap-3 group whitespace-nowrap">
+              <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-cyan-500/50 shadow-lg shadow-cyan-950/60 group-hover:scale-105 group-hover:border-cyan-400 transition-all bg-slate-900 shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="DisasterLens AI Emblem"
+                  className="w-full h-full object-cover scale-125 group-hover:rotate-3 transition-transform"
+                />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse border border-slate-950" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">

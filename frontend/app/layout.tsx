@@ -4,6 +4,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DisasterLens AI — Real-Time Disaster Intelligence & Response Co-Pilot",
   description: "AI-powered disaster management platform monitoring emergency reports, weather alerts, flood indicators, risk estimation, and decision co-pilot.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

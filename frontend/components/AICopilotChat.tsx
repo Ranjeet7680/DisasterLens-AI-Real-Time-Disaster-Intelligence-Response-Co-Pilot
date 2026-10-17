@@ -137,9 +137,14 @@ export const AICopilotChat: React.FC<AICopilotChatProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full h-[620px] shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-slate-800 bg-slate-950/70 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-950/50">
-              <Bot className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-purple-500/50 shadow-lg shadow-purple-950/50 shrink-0 bg-slate-900">
+              <img
+                src="/logo.png"
+                alt="AI Co-Pilot"
+                className="w-full h-full object-cover scale-125"
+              />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             </div>
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
