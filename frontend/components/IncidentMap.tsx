@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Incident, ResourceItem } from '../lib/types';
-import { Eye, EyeOff, Navigation, Layers, Compass, Crosshair } from 'lucide-react';
+import { Layers, Compass, Crosshair, Map, Globe } from 'lucide-react';
 import { SupportedLanguage } from '../lib/languages';
 
 interface IncidentMapProps {
@@ -22,12 +22,14 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const tileLayerRef = useRef<any>(null);
   const incidentLayerRef = useRef<any>(null);
   const resourceLayerRef = useRef<any>(null);
   const routeLayerRef = useRef<any>(null);
   const hazardCircleLayerRef = useRef<any>(null);
 
   // Tactical layer toggle states
+  const [baseMapStyle, setBaseMapStyle] = useState<'dark' | 'satellite' | 'street'>('dark');
   const [showRadar, setShowRadar] = useState(true);
   const [showResources, setShowResources] = useState(true);
   const [showHazardZones, setShowHazardZones] = useState(true);
@@ -60,12 +62,6 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         // Add custom tactical zoom control at bottom right
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // Dark tactical CartoDB map tiles
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; CartoDB &copy; OpenStreetMap',
-          maxZoom: 19,
-        }).addTo(map);
-
         hazardCircleLayerRef.current = L.layerGroup().addTo(map);
         routeLayerRef.current = L.layerGroup().addTo(map);
         resourceLayerRef.current = L.layerGroup().addTo(map);
@@ -75,6 +71,37 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       }
 
       const map = mapInstanceRef.current;
+
+      // Update Base Tile Layer cleanly without API keys or watermarks
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
+
+      let tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      let tileOptions: any = {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+        className: 'tactical-dark-tiles'
+      };
+
+      if (baseMapStyle === 'satellite') {
+        tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+        tileOptions = {
+          attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+          maxZoom: 18,
+          className: 'tactical-satellite-tiles'
+        };
+      } else if (baseMapStyle === 'street') {
+        tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+        tileOptions = {
+          attribution: '&copy; OpenStreetMap contributors',
+          maxZoom: 19,
+          className: ''
+        };
+      }
+
+      tileLayerRef.current = L.tileLayer(tileUrl, tileOptions).addTo(map);
+
       const incGroup = incidentLayerRef.current;
       const resGroup = resourceLayerRef.current;
       const routeGroup = routeLayerRef.current;
@@ -87,41 +114,43 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       routeGroup.clearLayers();
       hazardGroup.clearLayers();
 
-      // 1. Plot Resources if enabled
+      // 1. Plot Emergency Resources (Shelters, Boats, Pumps)
       if (showResources) {
         resources.forEach((res) => {
           const lat = res.location.latitude;
           const lon = res.location.longitude;
           const isShelter = res.resource_type === 'evacuation_shelter';
-          const iconColor = isShelter ? '#7c3aed' : '#0284c7';
+          const iconColor = isShelter ? '#8b5cf6' : '#0284c7';
           const iconEmoji = isShelter ? '🏠' : res.resource_type === 'water_pump' ? '⚙️' : '🚤';
 
           const customIcon = L.divIcon({
             html: `
-              <div style="background:${iconColor};color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #ffffff;box-shadow:0 3px 8px rgba(0,0,0,0.6);" class="sonar-emitter-blue">
+              <div style="background:${iconColor};color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #ffffff;box-shadow:0 0 10px ${iconColor};" class="sonar-emitter-blue">
                 ${iconEmoji}
               </div>
             `,
             className: 'custom-resource-marker',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
           });
 
           const resMarker = L.marker([lat, lon], { icon: customIcon });
           resMarker.bindPopup(`
-            <div style="font-family:sans-serif;font-size:12px;min-width:180px;">
-              <strong style="color:${iconColor};text-transform:uppercase;">${res.resource_type.replace('_', ' ')}</strong>
-              <div style="font-weight:bold;font-size:13px;margin:2px 0;">${res.name}</div>
-              <div>Available Capacity: <strong>${res.available_capacity} / ${res.capacity}</strong></div>
-              <div>Base Status: <span style="color:#10b981;font-weight:bold;">${res.status}</span></div>
-              <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${res.location.address || ''}</div>
+            <div style="font-family:sans-serif;font-size:12px;min-width:200px;padding:4px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <strong style="color:${iconColor};text-transform:uppercase;font-size:11px;">${res.resource_type.replace('_', ' ')}</strong>
+                <span style="background:${iconColor}22;color:${iconColor};border:1px solid ${iconColor}66;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">${res.status}</span>
+              </div>
+              <div style="font-weight:bold;font-size:13px;margin:3px 0;color:#f8fafc;">${res.name}</div>
+              <div style="color:#cbd5e1;margin-bottom:3px;">Available: <strong style="color:#38bdf8;">${res.available_capacity} / ${res.capacity}</strong> units</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">📍 ${res.location.address || ''}</div>
             </div>
           `);
           resGroup.addLayer(resMarker);
         });
       }
 
-      // 2. Plot Incidents & Pulsing Zones
+      // 2. Plot Incidents & Tactical Hazard Rings
       incidents.forEach((inc) => {
         const lat = inc.location.latitude;
         const lon = inc.location.longitude;
@@ -144,24 +173,37 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           color = '#10b981';
         }
 
-        // Hazard Inundation Circle
+        // Calibrated Multi-Ring Tactical Hazard Perimeter (core danger + perimeter warning)
         if (showHazardZones) {
-          const radius = riskBand === 'CRITICAL' ? 1900 : riskBand === 'HIGH' ? 1200 : 700;
-          const circle = L.circle([lat, lon], {
+          const coreRadius = riskBand === 'CRITICAL' ? 550 : riskBand === 'HIGH' ? 380 : 200;
+          const outerRadius = coreRadius * 1.5;
+
+          // Outer evacuation perimeter warning circle
+          const outerCircle = L.circle([lat, lon], {
             color: color,
             fillColor: color,
-            fillOpacity: isSelected ? 0.28 : 0.16,
-            radius: radius,
-            weight: isSelected ? 2.5 : 1.2,
-            dashArray: isSelected ? '4, 4' : undefined
+            fillOpacity: isSelected ? 0.08 : 0.04,
+            radius: outerRadius,
+            weight: isSelected ? 1.8 : 1,
+            dashArray: '5, 5'
           });
-          hazardGroup.addLayer(circle);
+          hazardGroup.addLayer(outerCircle);
+
+          // Inner high-danger flood inundation core
+          const innerCircle = L.circle([lat, lon], {
+            color: color,
+            fillColor: color,
+            fillOpacity: isSelected ? 0.25 : 0.15,
+            radius: coreRadius,
+            weight: isSelected ? 2.5 : 1.5
+          });
+          hazardGroup.addLayer(innerCircle);
         }
 
-        // Marker Pin
+        // Marker Pin with Glowing Radar Ping
         const pinHtml = `
-          <div style="position:relative;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-            <div style="background:${color};color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;border:${isSelected ? '3px solid #38bdf8' : '2px solid #ffffff'};box-shadow:0 4px 12px rgba(0,0,0,0.7);" class="${sonarClass}">
+          <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <div style="background:${color};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:monospace;font-size:12px;border:${isSelected ? '3px solid #38bdf8' : '2px solid #ffffff'};box-shadow:0 0 14px ${color};" class="${sonarClass}">
               ${score > 0 ? Math.round(score) : '!'}
             </div>
           </div>
@@ -170,8 +212,8 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         const pinIcon = L.divIcon({
           html: pinHtml,
           className: 'tactical-incident-pin',
-          iconSize: [34, 34],
-          iconAnchor: [17, 17]
+          iconSize: [36, 36],
+          iconAnchor: [18, 18]
         });
 
         const marker = L.marker([lat, lon], { icon: pinIcon });
@@ -179,25 +221,26 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         const popupDiv = document.createElement('div');
         popupDiv.style.fontFamily = 'sans-serif';
         popupDiv.style.fontSize = '12px';
-        popupDiv.style.minWidth = '220px';
+        popupDiv.style.minWidth = '230px';
+        popupDiv.style.padding = '4px';
         popupDiv.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-weight:bold;color:${color};font-size:11px;text-transform:uppercase;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-weight:900;color:${color};font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">
               ${inc.hazard_type.replace('_', ' ')}
             </span>
-            <span style="background:${color};color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">
-              ${score.toFixed(0)}/100
+            <span style="background:${color};color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:bold;font-family:monospace;">
+              ${score.toFixed(0)}/100 • ${riskBand}
             </span>
           </div>
-          <div style="font-weight:bold;color:#f8fafc;font-size:13px;margin-bottom:2px;">${inc.incident_id}</div>
-          <div style="color:#cbd5e1;margin-bottom:6px;max-height:60px;overflow-y:auto;line-height:1.3;">${inc.description}</div>
-          <div style="font-size:10px;color:#94a3b8;margin-bottom:8px;">${inc.location.region || inc.location.address || ''}</div>
+          <div style="font-weight:bold;color:#f8fafc;font-size:13px;margin-bottom:4px;">${inc.incident_id}</div>
+          <div style="color:#cbd5e1;margin-bottom:8px;max-height:70px;overflow-y:auto;line-height:1.4;">${inc.description}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">📍 ${inc.location.region || inc.location.address || 'Reported Sector'}</div>
         `;
 
         const btn = document.createElement('button');
         btn.innerText = lang === 'en' ? 'Select for AI Co-Pilot' : 'AI सह-पायलट हेतु चुनें';
         btn.style.width = '100%';
-        btn.style.padding = '6px';
+        btn.style.padding = '8px';
         btn.style.background = '#2563eb';
         btn.style.color = '#fff';
         btn.style.border = 'none';
@@ -220,22 +263,37 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
               ],
               {
                 color: '#38bdf8',
-                weight: 2,
+                weight: 2.5,
                 dashArray: '6, 8',
-                opacity: 0.75
+                opacity: 0.85
               }
             );
-            polyline.bindTooltip(`Route to ${r.name}`, { sticky: true });
+
+            // Haversine distance in km
+            const R = 6371;
+            const dLat = (r.location.latitude - lat) * (Math.PI / 180);
+            const dLon = (r.location.longitude - lon) * (Math.PI / 180);
+            const a =
+              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat * (Math.PI / 180)) * Math.cos(r.location.latitude * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distKm = (R * c).toFixed(1);
+
+            polyline.bindTooltip(`⚡ Dispatch Vector: ${r.name} (${distKm} km)`, {
+              sticky: true,
+              className: 'tactical-tooltip'
+            });
             routeGroup.addLayer(polyline);
           });
         }
       });
 
-      // Pan to selected incident
+      // Pan smoothly to selected incident
       if (selectedIncident) {
         map.setView(
           [selectedIncident.location.latitude, selectedIncident.location.longitude],
-          14,
+          13,
           { animate: true }
         );
       }
@@ -244,7 +302,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [incidents, resources, selectedIncident, onSelectIncident, showResources, showHazardZones, showRoutes, lang]);
+  }, [incidents, resources, selectedIncident, onSelectIncident, showResources, showHazardZones, showRoutes, baseMapStyle, lang]);
 
   const handleResetView = () => {
     if (mapInstanceRef.current) {
@@ -256,27 +314,66 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
     if (mapInstanceRef.current && selectedIncident) {
       mapInstanceRef.current.setView(
         [selectedIncident.location.latitude, selectedIncident.location.longitude],
-        14,
+        13,
         { animate: true }
       );
     }
   };
 
   return (
-    <div className="relative w-full h-[460px] lg:h-[530px] rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
+    <div className="relative w-full h-[480px] lg:h-[540px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
       {/* Tactical Radar Cone Animation Overlay */}
       {showRadar && <div className="radar-sweep-cone" />}
 
-      {/* The Leaflet Map DOM Node */}
+      {/* Leaflet Map DOM Node */}
       <div ref={mapContainerRef} className="w-full h-full" />
 
-      {/* Top Map Layer Control Bar */}
-      <div className="absolute top-3 right-3 z-[1000] bg-slate-950/85 backdrop-blur-md p-1.5 rounded-lg border border-slate-800 flex items-center gap-1.5 text-xs text-slate-300 shadow-xl">
+      {/* Top Left: Basemap Mode Switcher */}
+      <div className="absolute top-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 flex items-center gap-1 shadow-2xl">
+        <button
+          onClick={() => setBaseMapStyle('dark')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            baseMapStyle === 'dark'
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <span>🌑</span>
+          <span>Tactical Dark</span>
+        </button>
+
+        <button
+          onClick={() => setBaseMapStyle('satellite')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            baseMapStyle === 'satellite'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Globe className="w-3.5 h-3.5" />
+          <span>Satellite</span>
+        </button>
+
+        <button
+          onClick={() => setBaseMapStyle('street')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            baseMapStyle === 'street'
+              ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Map className="w-3.5 h-3.5" />
+          <span>Street</span>
+        </button>
+      </div>
+
+      {/* Top Right: Tactical Layer Controls */}
+      <div className="absolute top-3 right-3 z-[1000] bg-slate-950/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 flex items-center gap-1.5 text-xs text-slate-300 shadow-2xl">
         <button
           onClick={() => setShowRadar(!showRadar)}
           title="Toggle Radar Sweep Effect"
-          className={`px-2 py-1 rounded text-[11px] font-semibold transition-colors flex items-center gap-1 ${
-            showRadar ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'text-slate-400 hover:text-white'
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+            showRadar ? 'bg-cyan-950 text-cyan-300 border border-cyan-800 shadow-sm' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Compass className="w-3 h-3 text-cyan-400" />
@@ -286,8 +383,8 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         <button
           onClick={() => setShowHazardZones(!showHazardZones)}
           title="Toggle Inundation Zones"
-          className={`px-2 py-1 rounded text-[11px] font-semibold transition-colors flex items-center gap-1 ${
-            showHazardZones ? 'bg-red-950 text-red-300 border border-red-800' : 'text-slate-400 hover:text-white'
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+            showHazardZones ? 'bg-red-950 text-red-300 border border-red-800 shadow-sm' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Layers className="w-3 h-3 text-red-400" />
@@ -297,48 +394,58 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         <button
           onClick={() => setShowRoutes(!showRoutes)}
           title="Toggle Resource Dispatch Vector Lines"
-          className={`px-2 py-1 rounded text-[11px] font-semibold transition-colors flex items-center gap-1 ${
-            showRoutes ? 'bg-sky-950 text-sky-300 border border-sky-800' : 'text-slate-400 hover:text-white'
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+            showRoutes ? 'bg-sky-950 text-sky-300 border border-sky-800 shadow-sm' : 'text-slate-400 hover:text-white'
           }`}
         >
-          <Navigation className="w-3 h-3 text-sky-400" />
+          <span>⚡</span>
           <span className="hidden sm:inline">Vectors</span>
         </button>
+
+        <div className="h-4 w-px bg-slate-800 mx-0.5" />
 
         <button
           onClick={handleFocusSelected}
           disabled={!selectedIncident}
-          title="Center Map on Selected Incident"
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-300 disabled:opacity-30 transition-colors"
+          title="Focus Selected Incident"
+          className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300 disabled:opacity-30 transition-colors"
         >
-          <Crosshair className="w-3.5 h-3.5 text-amber-400" />
+          <Crosshair className="w-4 h-4 text-amber-400" />
+        </button>
+
+        <button
+          onClick={handleResetView}
+          title="Reset View to EOC Basin"
+          className="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-colors"
+        >
+          Reset
         </button>
       </div>
 
       {/* Tactical Legend at Bottom Left */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-800 text-[11px] text-slate-300 flex flex-wrap items-center gap-3 shadow-2xl">
-        <span className="font-semibold text-slate-400">
-          {lang === 'en' ? 'Tactical Map Legend:' : 'संकेतक:'}
+      <div className="absolute bottom-3 left-3 z-[1000] bg-slate-950/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-800 text-[11px] text-slate-300 flex flex-wrap items-center gap-3.5 shadow-2xl">
+        <span className="font-bold text-slate-400 uppercase text-[10px] tracking-wider">
+          {lang === 'en' ? 'EOC Legend:' : 'संकेतक:'}
         </span>
-        <div className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-          <span>{lang === 'en' ? 'Critical (>=75)' : 'गंभीर'}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-sm shadow-red-500" />
+          <span className="font-medium text-red-300">{lang === 'en' ? 'Critical (>=75)' : 'गंभीर'}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-          <span>{lang === 'en' ? 'High' : 'उच्च'}</span>
+          <span className="font-medium text-orange-300">{lang === 'en' ? 'High' : 'उच्च'}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-          <span>{lang === 'en' ? 'Medium' : 'मध्यम'}</span>
+          <span className="font-medium text-yellow-300">{lang === 'en' ? 'Medium' : 'मध्यम'}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-          <span>{lang === 'en' ? 'Shelter' : 'आश्रय'}</span>
+          <span className="font-medium text-purple-300">{lang === 'en' ? 'Shelter' : 'आश्रय'}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-          <span>{lang === 'en' ? 'Rescue Unit' : 'बचाव दल'}</span>
+          <span className="font-medium text-sky-300">{lang === 'en' ? 'Rescue Unit' : 'बचाव दल'}</span>
         </div>
       </div>
     </div>

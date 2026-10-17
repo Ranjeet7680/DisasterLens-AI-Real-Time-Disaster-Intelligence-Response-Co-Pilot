@@ -43,37 +43,40 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-red-950 text-red-400 border border-red-800">
+      <div className="flex items-center justify-between mb-3.5">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-red-950/80 text-red-400 border border-red-800/80 shadow-md">
             <Bell className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <span>{lang === 'en' ? 'Active Alerts' : 'सक्रिय चेतावनियां'}</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[11px] bg-red-900/60 text-red-300 font-mono">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>{lang === 'en' ? 'Active Alerts & Bulletins' : 'सक्रिय चेतावनियां'}</span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] bg-red-900/80 text-red-100 font-mono font-bold">
                 {alerts.filter((a) => a.state === 'active').length}
               </span>
             </h3>
+            <span className="text-[10px] text-slate-400 font-mono">
+              Real-Time Emergency Feeds
+            </span>
           </div>
         </div>
 
         {/* Filter */}
-        <div className="flex rounded-md bg-slate-950 p-0.5 border border-slate-800 text-[11px]">
+        <div className="flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-[11px]">
           <button
             onClick={() => setFilterState('active')}
-            className={`px-2 py-0.5 rounded transition-colors ${
-              filterState === 'active' ? 'bg-slate-800 text-white font-bold' : 'text-slate-400'
+            className={`px-2.5 py-0.5 rounded-md transition-all font-semibold ${
+              filterState === 'active' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             {lang === 'en' ? 'Active' : 'सक्रिय'}
           </button>
           <button
             onClick={() => setFilterState('all')}
-            className={`px-2 py-0.5 rounded transition-colors ${
-              filterState === 'all' ? 'bg-slate-800 text-white font-bold' : 'text-slate-400'
+            className={`px-2.5 py-0.5 rounded-md transition-all font-semibold ${
+              filterState === 'all' ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             {lang === 'en' ? 'All' : 'सभी'}
@@ -82,9 +85,9 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
       </div>
 
       {/* Alert Feed */}
-      <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+      <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
         {displayedAlerts.length === 0 ? (
-          <div className="text-center py-6 text-slate-500 text-xs">
+          <div className="text-center py-8 text-slate-500 text-xs">
             {lang === 'en' ? 'No active alerts in queue.' : 'वर्तमान में कोई सक्रिय चेतावनी नहीं है।'}
           </div>
         ) : (
@@ -96,38 +99,38 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
             return (
               <div
                 key={alt.id}
-                className={`p-3 rounded-lg border text-xs transition-all ${
+                className={`p-3.5 rounded-xl border text-xs transition-all ${
                   isCritical
-                    ? 'bg-red-950/40 border-red-800/80'
-                    : 'bg-amber-950/30 border-amber-800/60'
+                    ? 'bg-gradient-to-r from-red-950/40 to-slate-900 border-red-800/80 border-l-4 border-l-red-500 shadow-md shadow-red-950/30'
+                    : 'bg-gradient-to-r from-amber-950/30 to-slate-900 border-amber-800/60 border-l-4 border-l-amber-500'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <div className="flex items-center gap-1.5 font-bold text-white">
-                    <ShieldAlert className={`w-3.5 h-3.5 ${isCritical ? 'text-red-400' : 'text-amber-400'}`} />
-                    <span>{alt.title}</span>
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5 font-black text-white">
+                    <ShieldAlert className={`w-4 h-4 shrink-0 ${isCritical ? 'text-red-400 animate-pulse' : 'text-amber-400'}`} />
+                    <span className="leading-snug">{alt.title}</span>
                   </div>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold ${
-                    isCritical ? 'bg-red-900/80 text-red-200' : 'bg-amber-900/80 text-amber-200'
+                  <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-black font-mono shrink-0 ${
+                    isCritical ? 'bg-red-900 text-red-100 border border-red-700' : 'bg-amber-900 text-amber-100 border border-amber-700'
                   }`}>
                     {alt.severity}
                   </span>
                 </div>
 
-                <p className="text-slate-300 leading-relaxed mb-2.5">{alt.message}</p>
+                <p className="text-slate-300 leading-relaxed mb-3">{alt.message}</p>
 
                 {/* Footer with actions */}
                 <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
-                  <span className="text-slate-400 font-mono">
-                    {new Date(alt.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span className="text-slate-400 font-mono text-[10px]">
+                    🕒 {new Date(alt.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     {alt.state === 'active' && (
                       <button
                         onClick={() => handleAck(alt.id)}
                         disabled={loadingId === alt.id}
-                        className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-semibold transition-colors flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-bold transition-all flex items-center gap-1 border border-slate-700 hover:border-amber-500/50"
                       >
                         <Check className="w-3 h-3 text-amber-400" />
                         <span>{lang === 'en' ? 'Acknowledge' : 'स्वीकार करें'}</span>
@@ -138,7 +141,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
                       <button
                         onClick={() => handleResolve(alt.id)}
                         disabled={loadingId === alt.id}
-                        className="px-2 py-0.5 rounded bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 text-[10px] font-semibold transition-colors flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 text-[10px] font-bold transition-all flex items-center gap-1 shadow-sm"
                       >
                         <CheckCheck className="w-3 h-3 text-emerald-400" />
                         <span>{lang === 'en' ? 'Resolve' : 'समाधान'}</span>
@@ -146,7 +149,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
                     )}
 
                     {isResolved && (
-                      <span className="text-emerald-400 font-mono text-[10px]">
+                      <span className="text-emerald-400 font-mono text-[10px] font-bold">
                         ✓ {lang === 'en' ? 'Resolved' : 'समाधानित'}
                       </span>
                     )}

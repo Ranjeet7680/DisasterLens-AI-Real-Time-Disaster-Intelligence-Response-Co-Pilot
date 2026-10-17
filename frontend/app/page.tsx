@@ -35,7 +35,7 @@ import {
   RiskAssessment
 } from '../lib/types';
 import { playEmergencyAlertSound } from '../lib/sound';
-import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Radio, Users, Cpu, FileCheck, FileText } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Radio, Users, Cpu, FileCheck, FileText, Flame, Clock, Truck } from 'lucide-react';
 
 export default function CommandDashboard() {
   const [lang, setLang] = useState<SupportedLanguage>('en');
@@ -163,7 +163,7 @@ export default function CommandDashboard() {
         }}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
+      <main className="flex-1 w-full max-w-[1700px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Multilingual Voice Assistant & SOS Dictation Bar */}
         <VoiceAssistantBar
           currentBriefText={
@@ -177,49 +177,110 @@ export default function CommandDashboard() {
           onOpenCopilot={() => setIsCopilotOpen(true)}
         />
 
-        {/* Top Tactical Metrics Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-slate-400 block mb-0.5">
-              {lang === 'en' ? 'Active Incidents' : 'सक्रिय घटनाएं'}
+        {/* Top Tactical Telemetry & Mission Control KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          {/* Active Incidents */}
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-cyan-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                {lang === 'en' ? 'Active Incidents' : 'सक्रिय घटनाएं'}
+              </span>
+              <Activity className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-black font-mono text-white tracking-tight">
+              {metrics?.total_active_incidents ?? 0}
+            </div>
+            <span className="text-[10px] text-cyan-400/80 font-mono mt-0.5 block">
+              ● Live Feeds Ingesting
             </span>
-            <div className="text-xl font-black text-white">{metrics?.total_active_incidents ?? 0}</div>
           </div>
 
-          <div className="bg-slate-900/90 border border-red-900/70 p-3 rounded-xl bg-gradient-to-br from-slate-900 to-red-950/30 backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-red-400 block mb-0.5">
-              {lang === 'en' ? 'Critical Priority' : 'गंभीर स्थिति'}
+          {/* Critical Priority */}
+          <div className="bg-gradient-to-br from-slate-900 to-red-950/40 border border-red-900/80 border-t-2 border-t-red-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-red-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider">
+                {lang === 'en' ? 'Critical Priority' : 'गंभीर स्थिति'}
+              </span>
+              <Flame className="w-4 h-4 text-red-500 animate-pulse group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-black font-mono text-red-400 tracking-tight">
+              {metrics?.critical_incidents ?? 0}
+            </div>
+            <span className="text-[10px] text-red-300/80 font-mono mt-0.5 block">
+              ▲ Immediate Threat
             </span>
-            <div className="text-xl font-black text-red-400">{metrics?.critical_incidents ?? 0}</div>
           </div>
 
-          <div className="bg-slate-900/90 border border-orange-900/70 p-3 rounded-xl bg-gradient-to-br from-slate-900 to-orange-950/30 backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-orange-400 block mb-0.5">
-              {lang === 'en' ? 'High Urgency' : 'उच्च तात्कालिकता'}
+          {/* High Urgency */}
+          <div className="bg-gradient-to-br from-slate-900 to-orange-950/40 border border-orange-900/80 border-t-2 border-t-orange-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-orange-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-orange-400 uppercase tracking-wider">
+                {lang === 'en' ? 'High Urgency' : 'उच्च तात्कालिकता'}
+              </span>
+              <AlertTriangle className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-black font-mono text-orange-400 tracking-tight">
+              {metrics?.high_incidents ?? 0}
+            </div>
+            <span className="text-[10px] text-orange-300/80 font-mono mt-0.5 block">
+              ⚠️ Watchlist Active
             </span>
-            <div className="text-xl font-black text-orange-400">{metrics?.high_incidents ?? 0}</div>
           </div>
 
-          <div className="bg-slate-900/90 border border-amber-900/70 p-3 rounded-xl bg-gradient-to-br from-slate-900 to-amber-950/30 backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-amber-400 block mb-0.5">
-              {lang === 'en' ? 'Safety Overrides' : 'सुरक्षा नियम सक्रिय'}
+          {/* Safety Overrides */}
+          <div className="bg-gradient-to-br from-slate-900 to-amber-950/40 border border-amber-900/80 border-t-2 border-t-amber-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-amber-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                {lang === 'en' ? 'Safety Overrides' : 'सुरक्षा नियम'}
+              </span>
+              <ShieldAlert className="w-4 h-4 text-amber-400 animate-bounce group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-black font-mono text-amber-300 tracking-tight">
+              {metrics?.safety_overrides_triggered ?? 0}
+            </div>
+            <span className="text-[10px] text-amber-400/80 font-mono mt-0.5 block">
+              🛡️ Hard Safety Active
             </span>
-            <div className="text-xl font-black text-amber-300">{metrics?.safety_overrides_triggered ?? 0}</div>
           </div>
 
-          <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-slate-400 block mb-0.5">
-              {lang === 'en' ? 'Pending Approvals' : 'अनुमोदन लंबित'}
+          {/* Pending Approvals */}
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-sky-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-sky-400 uppercase tracking-wider">
+                {lang === 'en' ? 'Approvals Pending' : 'अनुमोदन लंबित'}
+              </span>
+              <Clock className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="text-2xl font-black font-mono text-sky-400 tracking-tight">
+              {metrics?.pending_approvals ?? 0}
+            </div>
+            <span className="text-[10px] text-sky-300/80 font-mono mt-0.5 block">
+              ✍️ Officer Authorization
             </span>
-            <div className="text-xl font-black text-sky-400">{metrics?.pending_approvals ?? 0}</div>
           </div>
 
-          <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl backdrop-blur-md shadow-lg">
-            <span className="text-[11px] font-semibold text-slate-400 block mb-0.5">
-              {lang === 'en' ? 'Resource Deployed' : 'संसाधन परिनियोजन'}
-            </span>
-            <div className="text-xl font-black text-emerald-400">
-              {metrics?.resource_capacity?.deployed_pct ?? 0}%
+          {/* Resource Deployed */}
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-emerald-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                {lang === 'en' ? 'Resources Staged' : 'संसाधन परिनियोजन'}
+              </span>
+              <Truck className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">
+                {metrics?.resource_capacity?.deployed_pct ?? 0}%
+              </div>
+              <span className="text-[11px] font-mono text-slate-400">
+                {((metrics?.resource_capacity?.total ?? 0) - (metrics?.resource_capacity?.available ?? 0))} / {metrics?.resource_capacity?.total ?? 0} units
+              </span>
+            </div>
+            {/* Visual Mini Progress Bar */}
+            <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div
+                className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, Math.max(5, metrics?.resource_capacity?.deployed_pct ?? 0))}%` }}
+              />
             </div>
           </div>
         </div>

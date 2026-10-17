@@ -43,7 +43,7 @@ export default function AuditPage() {
         onOpenSimulator={() => setIsSimulatorOpen(true)}
       />
 
-      <main className="max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5 flex-1">
+      <main className="max-w-[1700px] w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 flex-1">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-black text-white flex items-center gap-2">

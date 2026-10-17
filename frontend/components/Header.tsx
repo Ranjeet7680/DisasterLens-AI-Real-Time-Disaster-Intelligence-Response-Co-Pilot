@@ -40,42 +40,42 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 text-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 text-slate-100 shadow-2xl">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-3">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-red-600 to-amber-600 text-white shadow-lg shadow-red-950/50 group-hover:scale-105 transition-transform">
-                <ShieldAlert className="w-6 h-6" />
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 group whitespace-nowrap">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-600 text-white shadow-lg shadow-red-950/60 group-hover:scale-105 transition-all">
+                <ShieldAlert className="w-5 h-5" />
               </div>
-              <div>
+              <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-red-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
+                  <span className="font-black text-lg tracking-tight bg-gradient-to-r from-red-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
                     DisasterLens AI
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-800">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-950/90 text-red-300 border border-red-800 font-bold uppercase tracking-wider">
                     EOC COPILOT
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 hidden sm:block">
-                  {lang === 'en' ? 'Real-Time Disaster Intelligence & Response' : 'वास्तविक समय आपदा खुफिया मंच'}
+                <p className="text-[11px] text-slate-400 hidden xl:block font-medium">
+                  {lang === 'en' ? 'Real-Time Disaster Intelligence & Response Platform' : 'वास्तविक समय आपदा खुफिया एवं प्रतिक्रिया मंच'}
                 </p>
               </div>
             </Link>
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1.5">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
-                      ? 'bg-slate-800 text-amber-400 border border-slate-700'
+                      ? 'bg-slate-800 text-amber-400 border border-slate-700 shadow-sm'
                       : 'text-slate-300 hover:bg-slate-900 hover:text-white'
                   }`}
                 >
