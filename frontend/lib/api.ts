@@ -78,6 +78,16 @@ async function safeFetch<T>(endpoint: string, options?: RequestInit, fallback?: 
   }
 }
 
+import {
+  getStoreIncidents,
+  getStoreIncidentDetail,
+  getStoreResources,
+  getStoreAlerts,
+  getStoreMetrics,
+  getStoreAudit,
+  addStoreIncident
+} from './mockStore';
+
 export async function fetchIncidents(params?: { hazard_type?: string; severity?: string; status?: string }): Promise<Incident[]> {
   const query = new URLSearchParams();
   if (params?.hazard_type) query.append('hazard_type', params.hazard_type);
@@ -85,11 +95,11 @@ export async function fetchIncidents(params?: { hazard_type?: string; severity?:
   if (params?.status) query.append('status', params.status);
 
   const qs = query.toString() ? `?${query.toString()}` : '';
-  return safeFetch<Incident[]>(`/api/incidents${qs}`, undefined, []);
+  return safeFetch<Incident[]>(`/api/incidents${qs}`, undefined, getStoreIncidents());
 }
 
 export async function fetchIncidentDetail(id: string): Promise<IncidentDetail | null> {
-  return safeFetch<IncidentDetail | null>(`/api/incidents/${id}`, undefined, null);
+  return safeFetch<IncidentDetail | null>(`/api/incidents/${id}`, undefined, getStoreIncidentDetail(id));
 }
 
 export async function submitIncident(payload: {
@@ -100,36 +110,40 @@ export async function submitIncident(payload: {
   description: string;
   metadata?: any;
 }): Promise<any> {
-  return safeFetch('/api/incidents', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  try {
+    return await safeFetch('/api/incidents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch {
+    return addStoreIncident(payload);
+  }
 }
 
 export async function triggerAnalysis(id: string): Promise<any> {
-  return safeFetch(`/api/incidents/${id}/analyze`, { method: 'POST' });
+  return safeFetch(`/api/incidents/${id}/analyze`, { method: 'POST' }, { status: 'success', incident_id: id });
 }
 
 export async function fetchAlerts(state?: string): Promise<Alert[]> {
   const query = state ? `?state=${state}` : '';
-  return safeFetch<Alert[]>(`/api/alerts${query}`, undefined, []);
+  return safeFetch<Alert[]>(`/api/alerts${query}`, undefined, getStoreAlerts());
 }
 
 export async function acknowledgeAlert(alertId: string, operatorName: string = 'EOC Commander'): Promise<any> {
   return safeFetch(`/api/alerts/${alertId}/ack?operator_name=${encodeURIComponent(operatorName)}`, {
     method: 'POST'
-  });
+  }, { status: 'acknowledged', alert_id: alertId, acknowledged_by: operatorName });
 }
 
 export async function resolveAlert(alertId: string, operatorName: string = 'EOC Commander'): Promise<any> {
   return safeFetch(`/api/alerts/${alertId}/resolve?operator_name=${encodeURIComponent(operatorName)}`, {
     method: 'POST'
-  });
+  }, { status: 'resolved', alert_id: alertId });
 }
 
 export async function fetchResources(): Promise<ResourceItem[]> {
-  return safeFetch<ResourceItem[]>('/api/resources', undefined, []);
+  return safeFetch<ResourceItem[]>('/api/resources', undefined, getStoreResources());
 }
 
 export async function reviewRecommendation(
@@ -148,33 +162,39 @@ export async function reviewRecommendation(
       review_notes: reviewNotes,
       modified_action: modifiedAction
     })
-  });
+  }, { status: 'success', decision, recommendation_id: recId });
 }
 
 export async function fetchAuditEvents(limit: number = 30): Promise<AuditEvent[]> {
-  return safeFetch<AuditEvent[]>(`/api/audit?limit=${limit}`, undefined, []);
+  return safeFetch<AuditEvent[]>(`/api/audit?limit=${limit}`, undefined, getStoreAudit());
 }
 
 export async function fetchMetrics(): Promise<DashboardMetrics> {
-  const defaultMetrics: DashboardMetrics = {
-    total_active_incidents: 0,
-    critical_incidents: 0,
-    high_incidents: 0,
-    active_alerts: 0,
-    pending_approvals: 0,
-    safety_overrides_triggered: 0,
-    resource_capacity: {
-      total: 0,
-      available: 0,
-      deployed_pct: 0
-    },
-    average_agent_latency_ms: 0
-  };
-  return safeFetch<DashboardMetrics>('/api/metrics', undefined, defaultMetrics);
+  return safeFetch<DashboardMetrics>('/api/metrics', undefined, getStoreMetrics());
 }
 
 export async function fetchScenarios(): Promise<any[]> {
-  return safeFetch<any[]>('/api/simulator/scenarios', undefined, []);
+  const defaultScenarios = [
+    {
+      key: 'flash_flood_subarnarekha',
+      title: 'Subarnarekha River Flash Surge (78mm/h)',
+      severity: 'critical',
+      description: 'Torrential rainfall causing rapid embankment inundation in Namkum Basin'
+    },
+    {
+      key: 'dam_overflow_dhurwa',
+      title: 'Dhurwa Dam Emergency Sluice Release',
+      severity: 'critical',
+      description: 'Controlled 12,000 cusecs spillway release threatening downstream bridge piers'
+    },
+    {
+      key: 'cyclone_wind_damage',
+      title: 'Cyclone Impact: High Winds & Power Grid Grounding',
+      severity: 'high',
+      description: 'Gale force winds of 85 km/h bringing down electric feeders across Harmu'
+    }
+  ];
+  return safeFetch<any[]>('/api/simulator/scenarios', undefined, defaultScenarios);
 }
 
 export async function triggerScenario(scenarioKey: string): Promise<any> {
@@ -182,9 +202,18 @@ export async function triggerScenario(scenarioKey: string): Promise<any> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ scenario_key: scenarioKey })
-  });
+  }, { status: 'injected', scenario_key: scenarioKey });
 }
 
 export async function fetchWeather(lat: number, lon: number): Promise<any> {
-  return safeFetch<any>(`/api/weather?latitude=${lat}&longitude=${lon}`, undefined, null);
+  const defaultWeather = {
+    current: {
+      temperature_2m: 28.4,
+      relative_humidity_2m: 92,
+      precipitation: 76.5,
+      weather_code: 65,
+      wind_speed_10m: 34.2
+    }
+  };
+  return safeFetch<any>(`/api/weather?latitude=${lat}&longitude=${lon}`, undefined, defaultWeather);
 }

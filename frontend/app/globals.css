@@ -103,10 +103,6 @@ body {
   filter: invert(100%) brightness(0.85) contrast(1.2) !important;
 }
 
-.tactical-satellite-tiles .leaflet-tile {
-  filter: contrast(1.1) brightness(0.95) saturate(1.1) !important;
-}
-
 /* Animated Laser Dispatch Vectors */
 @keyframes laser-flow {
   0% {

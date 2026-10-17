@@ -106,7 +106,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         tileOptions = {
           attribution: '&copy; Esri, Maxar, Earthstar Geographics',
           maxZoom: 18,
-          className: 'tactical-satellite-tiles'
+          className: ''
         };
       } else if (baseMapStyle === 'street') {
         tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
@@ -373,9 +373,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       {/* Leaflet Map DOM Node */}
       <div
         ref={mapContainerRef}
-        className={`w-full h-full ${
-          baseMapStyle === 'dark' ? 'tactical-dark-tiles' : baseMapStyle === 'satellite' ? 'tactical-satellite-tiles' : ''
-        }`}
+        className={`w-full h-full ${baseMapStyle === 'dark' ? 'tactical-dark-tiles' : ''}`}
       />
 
       {/* Top Left: Basemap Mode Switcher */}
