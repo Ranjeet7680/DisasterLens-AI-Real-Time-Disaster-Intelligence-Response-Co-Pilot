@@ -94,11 +94,12 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         map.removeLayer(tileLayerRef.current);
       }
 
-      let tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      let tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
       let tileOptions: any = {
-        attribution: '&copy; OpenStreetMap contributors',
+        subdomains: 'abcd',
+        attribution: '&copy; CARTO &copy; OpenStreetMap contributors',
         maxZoom: 19,
-        className: baseMapStyle === 'dark' ? 'tactical-dark-tiles' : ''
+        className: 'tactical-dark-tiles'
       };
 
       if (baseMapStyle === 'satellite') {
@@ -109,9 +110,10 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           className: 'tactical-satellite-tiles'
         };
       } else if (baseMapStyle === 'street') {
-        tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+        tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         tileOptions = {
-          attribution: '&copy; OpenStreetMap contributors',
+          subdomains: 'abcd',
+          attribution: '&copy; CARTO &copy; OpenStreetMap contributors',
           maxZoom: 19,
           className: ''
         };
@@ -350,21 +352,16 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[500px] lg:h-[560px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-[#080d1a]">
+    <div className="relative w-full h-[520px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-[#080d1a]">
       {/* Tactical Radar HUD Scanline Animation */}
       {showRadar && <div className="radar-scanline-bar" />}
 
-      {/* Futuristic Tactical HUD Corner Reticles */}
-      <div className="absolute top-2 left-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
-        ┌ RADAR SCAN ACTIVE [23.35°N 85.32°E]
+      {/* Futuristic Tactical HUD Corner Reticles (positioned cleanly away from controls) */}
+      <div className="absolute top-14 left-3 z-[450] pointer-events-none text-cyan-400/80 font-mono text-[10px] select-none bg-slate-950/70 backdrop-blur px-2 py-0.5 rounded border border-cyan-800/50 flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+        <span>RADAR ACTIVE [23.35°N 85.32°E]</span>
       </div>
-      <div className="absolute top-2 right-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
-        GRID LOCK ┐
-      </div>
-      <div className="absolute bottom-2 left-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
-        └ EOC RANCHI BASIN
-      </div>
-      <div className="absolute bottom-2 right-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
+      <div className="absolute bottom-2 right-24 z-[450] pointer-events-none text-cyan-500/40 font-mono text-[10px] select-none">
         TELEM OK ┘
       </div>
 

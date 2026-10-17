@@ -43,7 +43,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5">
         <div className="flex items-center gap-2.5">
@@ -85,7 +85,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onRefresh, lang 
       </div>
 
       {/* Alert Feed */}
-      <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
+      <div className="space-y-2.5 flex-1 min-h-0 overflow-y-auto pr-1">
         {displayedAlerts.length === 0 ? (
           <div className="text-center py-8 text-slate-500 text-xs">
             {lang === 'en' ? 'No active alerts in queue.' : 'वर्तमान में कोई सक्रिय चेतावनी नहीं है।'}

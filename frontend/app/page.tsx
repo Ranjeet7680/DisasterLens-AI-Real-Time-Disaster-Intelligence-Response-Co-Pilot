@@ -35,7 +35,7 @@ import {
   RiskAssessment
 } from '../lib/types';
 import { playEmergencyAlertSound } from '../lib/sound';
-import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Radio, Users, Cpu, FileCheck, FileText, Flame, Clock, Truck } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, CheckCircle, Activity, Radio, Users, Cpu, FileCheck, FileText, Flame, Clock, Truck, Layers, Bell } from 'lucide-react';
 
 export default function CommandDashboard() {
   const [lang, setLang] = useState<SupportedLanguage>('en');
@@ -48,6 +48,15 @@ export default function CommandDashboard() {
   const [resources, setResources] = useState<ResourceItem[]>([]);
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [rightPanelTab, setRightPanelTab] = useState<'queue' | 'alerts' | 'split'>('queue');
+
+  const handleSelectIncident = (inc: Incident) => {
+    setSelectedIncident(inc);
+    setTimeout(() => {
+      const el = document.getElementById('selected-incident-inspection');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  };
 
   // Modals
   const [isDecisionModalOpen, setIsDecisionModalOpen] = useState(false);
@@ -305,7 +314,7 @@ export default function CommandDashboard() {
               incidents={incidents}
               resources={resources}
               selectedIncident={selectedIncident}
-              onSelectIncident={(inc) => setSelectedIncident(inc)}
+              onSelectIncident={handleSelectIncident}
               lang={lang}
             />
 
@@ -321,29 +330,115 @@ export default function CommandDashboard() {
           </div>
 
           {/* Right: Incidents Queue & Alerts (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col space-y-4">
-            <div className="h-[280px]">
-              <IncidentTable
-                incidents={incidents}
-                selectedIncident={selectedIncident}
-                onSelectIncident={(inc) => setSelectedIncident(inc)}
-                lang={lang}
-              />
+          <div className="lg:col-span-5 flex flex-col h-[520px]">
+            {/* View Mode Switcher Header */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+                <button
+                  onClick={() => setRightPanelTab('queue')}
+                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all text-xs ${
+                    rightPanelTab === 'queue'
+                      ? 'bg-amber-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>{lang === 'en' ? 'Incident Queue' : 'घटना कतार'}</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-slate-950 font-mono text-[10px]">
+                    {incidents.length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setRightPanelTab('alerts')}
+                  className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all text-xs ${
+                    rightPanelTab === 'alerts'
+                      ? 'bg-red-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Bell className="w-3.5 h-3.5" />
+                  <span>{lang === 'en' ? 'Live Alerts' : 'चेतावनियां'}</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-slate-950 font-mono text-[10px]">
+                    {alerts.filter((a) => a.state === 'active').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setRightPanelTab('split')}
+                  className={`px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1 text-[11px] transition-all ${
+                    rightPanelTab === 'split'
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title="Stacked Split View"
+                >
+                  <span>Split</span>
+                </button>
+              </div>
+
+              {selectedIncident && (
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('selected-incident-inspection');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors bg-cyan-950/40 px-2 py-1 rounded-lg border border-cyan-800/60"
+                >
+                  <span>Risk Dial ↓</span>
+                </button>
+              )}
             </div>
 
-            <div className="h-[280px]">
-              <AlertPanel
-                alerts={alerts}
-                onRefresh={loadData}
-                lang={lang}
-              />
+            {/* Tabbed Content with full flex-1 height */}
+            <div className="flex-1 min-h-0 flex flex-col">
+              {rightPanelTab === 'queue' && (
+                <div className="h-full">
+                  <IncidentTable
+                    incidents={incidents}
+                    selectedIncident={selectedIncident}
+                    onSelectIncident={handleSelectIncident}
+                    lang={lang}
+                  />
+                </div>
+              )}
+
+              {rightPanelTab === 'alerts' && (
+                <div className="h-full">
+                  <AlertPanel
+                    alerts={alerts}
+                    onRefresh={loadData}
+                    lang={lang}
+                  />
+                </div>
+              )}
+
+              {rightPanelTab === 'split' && (
+                <div className="h-full flex flex-col gap-3">
+                  <div className="flex-1 min-h-0">
+                    <IncidentTable
+                      incidents={incidents}
+                      selectedIncident={selectedIncident}
+                      onSelectIncident={handleSelectIncident}
+                      lang={lang}
+                    />
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <AlertPanel
+                      alerts={alerts}
+                      onRefresh={loadData}
+                      lang={lang}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Selected Incident Deep Inspection & Decision Actions */}
         {selectedIncident && (
-          <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 shadow-2xl space-y-4 backdrop-blur-md">
+          <div id="selected-incident-inspection" className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 shadow-2xl space-y-4 backdrop-blur-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">

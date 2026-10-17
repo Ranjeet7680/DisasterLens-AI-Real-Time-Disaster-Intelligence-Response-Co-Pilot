@@ -98,13 +98,13 @@ body {
   z-index: 400;
 }
 
-/* Dark tactical OpenStreetMap tiles - zero API key, no watermark, gorgeous futuristic look */
+/* High-clarity tactical map tiles - CartoDB & Esri native rendering */
 .tactical-dark-tiles .leaflet-tile {
-  filter: brightness(0.68) invert(1) contrast(3.2) hue-rotate(205deg) saturate(0.28) brightness(0.72) !important;
+  filter: brightness(0.95) contrast(1.08) saturate(1.1) !important;
 }
 
 .tactical-satellite-tiles .leaflet-tile {
-  filter: contrast(1.15) brightness(0.92) saturate(1.15) !important;
+  filter: contrast(1.1) brightness(0.95) saturate(1.1) !important;
 }
 
 /* Animated Laser Dispatch Vectors */

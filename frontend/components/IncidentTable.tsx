@@ -62,7 +62,7 @@ export const IncidentTable: React.FC<IncidentTableProps> = ({
       </div>
 
       {/* Incident List */}
-      <div className="overflow-y-auto max-h-[520px] p-2.5 space-y-2.5 scroll-pt-2">
+      <div className="overflow-y-auto flex-1 min-h-0 p-2.5 space-y-2.5 scroll-pt-2">
         {sortedIncidents.length === 0 ? (
           <div className="p-10 text-center text-slate-500 text-xs">
             {lang === 'en' ? 'No incidents reported. Use simulator or submit a new report.' : 'कोई घटना दर्ज नहीं है। सिमुलेटर का प्रयोग करें।'}
