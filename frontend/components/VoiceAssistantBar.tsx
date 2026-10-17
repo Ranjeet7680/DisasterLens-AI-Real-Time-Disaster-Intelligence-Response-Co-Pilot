@@ -98,13 +98,15 @@ export const VoiceAssistantBar: React.FC<VoiceAssistantBarProps> = ({
         >
           {speaking ? (
             <>
-              {/* Equalizer animation */}
+              {/* 7-Bar Real-Time Equalizer animation */}
               <div className="flex items-center gap-0.5 h-3.5">
                 <div className="w-0.5 bg-slate-950 rounded-full eq-bar-1" />
                 <div className="w-0.5 bg-slate-950 rounded-full eq-bar-2" />
                 <div className="w-0.5 bg-slate-950 rounded-full eq-bar-3" />
                 <div className="w-0.5 bg-slate-950 rounded-full eq-bar-4" />
                 <div className="w-0.5 bg-slate-950 rounded-full eq-bar-5" />
+                <div className="w-0.5 bg-slate-950 rounded-full eq-bar-6" />
+                <div className="w-0.5 bg-slate-950 rounded-full eq-bar-7" />
               </div>
               <span>{lang === 'hi' ? 'रोकें (Stop)' : 'Stop Audio'}</span>
             </>

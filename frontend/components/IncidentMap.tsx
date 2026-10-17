@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Incident, ResourceItem } from '../lib/types';
-import { Layers, Compass, Crosshair, Map, Globe } from 'lucide-react';
+import { Layers, Compass, Crosshair, Map, Globe, Shield, RefreshCw } from 'lucide-react';
 import { SupportedLanguage } from '../lib/languages';
 
 interface IncidentMapProps {
@@ -34,6 +34,23 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   const [showResources, setShowResources] = useState(true);
   const [showHazardZones, setShowHazardZones] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
+
+  // Invalidate map size on resize & container mount
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
+
+    resizeObserver.observe(mapContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   // Initialize Map
   useEffect(() => {
@@ -72,7 +89,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
 
       const map = mapInstanceRef.current;
 
-      // Update Base Tile Layer cleanly without API keys or watermarks
+      // Clean tile layer switch without watermarks
       if (tileLayerRef.current) {
         map.removeLayer(tileLayerRef.current);
       }
@@ -81,7 +98,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       let tileOptions: any = {
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 19,
-        className: 'tactical-dark-tiles'
+        className: baseMapStyle === 'dark' ? 'tactical-dark-tiles' : ''
       };
 
       if (baseMapStyle === 'satellite') {
@@ -101,6 +118,12 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
       }
 
       tileLayerRef.current = L.tileLayer(tileUrl, tileOptions).addTo(map);
+
+      // Invalidate sizes immediately and with staggered intervals to ensure zero blank spots
+      map.invalidateSize();
+      const t1 = setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 60);
+      const t2 = setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 250);
+      const t3 = setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 600);
 
       const incGroup = incidentLayerRef.current;
       const resGroup = resourceLayerRef.current;
@@ -150,7 +173,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         });
       }
 
-      // 2. Plot Incidents & Tactical Hazard Rings
+      // 2. Plot Incidents & Tactical Concentric Hazard Rings
       incidents.forEach((inc) => {
         const lat = inc.location.latitude;
         const lon = inc.location.longitude;
@@ -163,7 +186,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         let sonarClass = 'sonar-emitter-blue';
         if (riskBand === 'CRITICAL' || isOverride) {
           color = '#ef4444';
-          sonarClass = 'sonar-emitter';
+          sonarClass = 'sonar-emitter threat-pulse-active';
         } else if (riskBand === 'HIGH') {
           color = '#f97316';
           sonarClass = 'sonar-emitter-amber';
@@ -173,16 +196,16 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           color = '#10b981';
         }
 
-        // Calibrated Multi-Ring Tactical Hazard Perimeter (core danger + perimeter warning)
+        // Calibrated Multi-Ring Tactical Hazard Perimeter
         if (showHazardZones) {
-          const coreRadius = riskBand === 'CRITICAL' ? 550 : riskBand === 'HIGH' ? 380 : 200;
+          const coreRadius = riskBand === 'CRITICAL' ? 520 : riskBand === 'HIGH' ? 360 : 180;
           const outerRadius = coreRadius * 1.5;
 
           // Outer evacuation perimeter warning circle
           const outerCircle = L.circle([lat, lon], {
             color: color,
             fillColor: color,
-            fillOpacity: isSelected ? 0.08 : 0.04,
+            fillOpacity: isSelected ? 0.08 : 0.03,
             radius: outerRadius,
             weight: isSelected ? 1.8 : 1,
             dashArray: '5, 5'
@@ -193,17 +216,17 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           const innerCircle = L.circle([lat, lon], {
             color: color,
             fillColor: color,
-            fillOpacity: isSelected ? 0.25 : 0.15,
+            fillOpacity: isSelected ? 0.28 : 0.16,
             radius: coreRadius,
             weight: isSelected ? 2.5 : 1.5
           });
           hazardGroup.addLayer(innerCircle);
         }
 
-        // Marker Pin with Glowing Radar Ping
+        // Tactical Marker Pin with Threat Pulse
         const pinHtml = `
-          <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-            <div style="background:${color};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:monospace;font-size:12px;border:${isSelected ? '3px solid #38bdf8' : '2px solid #ffffff'};box-shadow:0 0 14px ${color};" class="${sonarClass}">
+          <div style="position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <div style="background:${color};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:monospace;font-size:12px;border:${isSelected ? '3px solid #38bdf8' : '2px solid #ffffff'};box-shadow:0 0 16px ${color};" class="${sonarClass}">
               ${score > 0 ? Math.round(score) : '!'}
             </div>
           </div>
@@ -212,8 +235,8 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         const pinIcon = L.divIcon({
           html: pinHtml,
           className: 'tactical-incident-pin',
-          iconSize: [36, 36],
-          iconAnchor: [18, 18]
+          iconSize: [38, 38],
+          iconAnchor: [19, 19]
         });
 
         const marker = L.marker([lat, lon], { icon: pinIcon });
@@ -253,7 +276,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
         marker.bindPopup(popupDiv);
         incGroup.addLayer(marker);
 
-        // 3. Draw Tactical Dispatch Routes from Selected Incident to nearby units
+        // 3. Draw Animated Laser Dispatch Vectors
         if (isSelected && showRoutes) {
           resources.slice(0, 3).forEach((r) => {
             const polyline = L.polyline(
@@ -264,8 +287,8 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
               {
                 color: '#38bdf8',
                 weight: 2.5,
-                dashArray: '6, 8',
-                opacity: 0.85
+                className: 'laser-dispatch-vector',
+                opacity: 0.95
               }
             );
 
@@ -280,7 +303,7 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const distKm = (R * c).toFixed(1);
 
-            polyline.bindTooltip(`⚡ Dispatch Vector: ${r.name} (${distKm} km)`, {
+            polyline.bindTooltip(`⚡ Vector to ${r.name} (${distKm} km)`, {
               sticky: true,
               className: 'tactical-tooltip'
             });
@@ -297,6 +320,12 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
           { animate: true }
         );
       }
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
     });
 
     return () => {
@@ -321,12 +350,31 @@ export const IncidentMap: React.FC<IncidentMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[480px] lg:h-[540px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950">
-      {/* Tactical Radar Cone Animation Overlay */}
-      {showRadar && <div className="radar-sweep-cone" />}
+    <div className="relative w-full h-[500px] lg:h-[560px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-[#080d1a]">
+      {/* Tactical Radar HUD Scanline Animation */}
+      {showRadar && <div className="radar-scanline-bar" />}
+
+      {/* Futuristic Tactical HUD Corner Reticles */}
+      <div className="absolute top-2 left-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
+        ┌ RADAR SCAN ACTIVE [23.35°N 85.32°E]
+      </div>
+      <div className="absolute top-2 right-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
+        GRID LOCK ┐
+      </div>
+      <div className="absolute bottom-2 left-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
+        └ EOC RANCHI BASIN
+      </div>
+      <div className="absolute bottom-2 right-2 z-[450] pointer-events-none text-cyan-500/40 font-mono text-xs select-none">
+        TELEM OK ┘
+      </div>
 
       {/* Leaflet Map DOM Node */}
-      <div ref={mapContainerRef} className="w-full h-full" />
+      <div
+        ref={mapContainerRef}
+        className={`w-full h-full ${
+          baseMapStyle === 'dark' ? 'tactical-dark-tiles' : baseMapStyle === 'satellite' ? 'tactical-satellite-tiles' : ''
+        }`}
+      />
 
       {/* Top Left: Basemap Mode Switcher */}
       <div className="absolute top-3 left-3 z-[1000] bg-slate-950/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 flex items-center gap-1 shadow-2xl">

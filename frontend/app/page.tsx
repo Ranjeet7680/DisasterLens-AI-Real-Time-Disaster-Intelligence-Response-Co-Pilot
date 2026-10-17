@@ -163,7 +163,7 @@ export default function CommandDashboard() {
         }}
       />
 
-      <main className="flex-1 w-full max-w-[1700px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 w-full max-w-[1700px] mx-auto p-3 sm:p-4 lg:px-6 lg:py-3.5 space-y-3.5">
         {/* Multilingual Voice Assistant & SOS Dictation Bar */}
         <VoiceAssistantBar
           currentBriefText={
@@ -178,9 +178,9 @@ export default function CommandDashboard() {
         />
 
         {/* Top Tactical Telemetry & Mission Control KPI Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           {/* Active Incidents */}
-          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-cyan-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-cyan-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-slate-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 {lang === 'en' ? 'Active Incidents' : 'सक्रिय घटनाएं'}
@@ -196,7 +196,7 @@ export default function CommandDashboard() {
           </div>
 
           {/* Critical Priority */}
-          <div className="bg-gradient-to-br from-slate-900 to-red-950/40 border border-red-900/80 border-t-2 border-t-red-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-red-700 transition-all group">
+          <div className="bg-gradient-to-br from-slate-900 to-red-950/40 border border-red-900/80 border-t-2 border-t-red-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-red-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider">
                 {lang === 'en' ? 'Critical Priority' : 'गंभीर स्थिति'}
@@ -212,7 +212,7 @@ export default function CommandDashboard() {
           </div>
 
           {/* High Urgency */}
-          <div className="bg-gradient-to-br from-slate-900 to-orange-950/40 border border-orange-900/80 border-t-2 border-t-orange-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-orange-700 transition-all group">
+          <div className="bg-gradient-to-br from-slate-900 to-orange-950/40 border border-orange-900/80 border-t-2 border-t-orange-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-orange-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-orange-400 uppercase tracking-wider">
                 {lang === 'en' ? 'High Urgency' : 'उच्च तात्कालिकता'}
@@ -228,7 +228,7 @@ export default function CommandDashboard() {
           </div>
 
           {/* Safety Overrides */}
-          <div className="bg-gradient-to-br from-slate-900 to-amber-950/40 border border-amber-900/80 border-t-2 border-t-amber-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-amber-700 transition-all group">
+          <div className="bg-gradient-to-br from-slate-900 to-amber-950/40 border border-amber-900/80 border-t-2 border-t-amber-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-amber-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
                 {lang === 'en' ? 'Safety Overrides' : 'सुरक्षा नियम'}
@@ -244,7 +244,7 @@ export default function CommandDashboard() {
           </div>
 
           {/* Pending Approvals */}
-          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-sky-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-sky-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-slate-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-sky-400 uppercase tracking-wider">
                 {lang === 'en' ? 'Approvals Pending' : 'अनुमोदन लंबित'}
@@ -260,7 +260,7 @@ export default function CommandDashboard() {
           </div>
 
           {/* Resource Deployed */}
-          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-emerald-500 p-3.5 rounded-2xl backdrop-blur-xl shadow-xl hover:border-slate-700 transition-all group">
+          <div className="bg-slate-900/90 border border-slate-800 border-t-2 border-t-emerald-500 p-2.5 sm:p-3 rounded-xl backdrop-blur-xl shadow-lg hover:border-slate-700 transition-all hover:-translate-y-0.5 group">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
                 {lang === 'en' ? 'Resources Staged' : 'संसाधन परिनियोजन'}
