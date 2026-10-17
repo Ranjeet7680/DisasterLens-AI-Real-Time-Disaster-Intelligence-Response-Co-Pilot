@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Ranjeet7680/DisasterLens-AI-Real-Time-Disaster-Intelligence-Response-Co-Pilot/wiki"><img src="https://img.shields.io/badge/Official%20Wiki-42%20Diagrams%20%7C%2014%20Pages-8b5cf6?style=for-the-badge&logo=gitbook&logoColor=white" alt="Official Wiki" /></a>
+  <a href="https://github.com/Ranjeet7680/DisasterLens-AI-Real-Time-Disaster-Intelligence-Response-Co-Pilot/wiki"><img src="https://img.shields.io/badge/Official%20Wiki-44%20Diagrams%20%7C%2015%20Pages-8b5cf6?style=for-the-badge&logo=gitbook&logoColor=white" alt="Official Wiki" /></a>
   <a href="https://frontend-weld-nu-50.vercel.app/linuxone"><img src="https://img.shields.io/badge/IBM%20Z%20%2F%20LinuxONE-s390x%20Ready-0062ff?style=for-the-badge&logo=ibm&logoColor=white" alt="IBM LinuxONE" /></a>
   <a href="https://frontend-weld-nu-50.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel%20Production-10b981?style=for-the-badge&logo=vercel" alt="Vercel Live Demo" /></a>
 </p>
